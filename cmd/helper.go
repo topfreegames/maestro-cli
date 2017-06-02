@@ -15,12 +15,7 @@
 package cmd
 
 import (
-	"fmt"
-	"io/ioutil"
-	"os/user"
-
 	"github.com/Sirupsen/logrus"
-	yaml "gopkg.in/yaml.v2"
 )
 
 func newLog(cmdName string) *logrus.Logger {
@@ -43,34 +38,4 @@ func newLog(cmdName string) *logrus.Logger {
 	log.Level = ll
 
 	return log
-}
-
-func homeDir() (string, error) {
-	usr, err := user.Current()
-	if err != nil {
-		return "", err
-	}
-
-	return usr.HomeDir, nil
-}
-
-func getServerUrl() (string, error) {
-	home, err := homeDir()
-	if err != nil {
-		return "", err
-	}
-
-	configPath := fmt.Sprintf("%s/.maestro/config.yaml", home)
-	bts, err := ioutil.ReadFile(configPath)
-	if err != nil {
-		return "", err
-	}
-
-	config := make(map[string]interface{})
-	err = yaml.Unmarshal(bts, &config)
-	if err != nil {
-		return "", err
-	}
-
-	return config["url"].(string), nil
 }

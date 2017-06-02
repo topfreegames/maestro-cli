@@ -16,11 +16,11 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/topfreegames/maestro-cli/api"
+	"github.com/topfreegames/maestro-cli/extensions"
+	loginExt "github.com/topfreegames/maestro-cli/login"
 
 	"github.com/spf13/cobra"
 )
@@ -41,40 +41,20 @@ var loginCmd = &cobra.Command{
 		url := args[0]
 		log.Debugf("saving remote %s on config", url)
 
-		home, err := homeDir()
+		login := loginExt.NewLogin(url, nil)
+		client := extensions.NewClient(nil)
+		filesystem := extensions.NewFileSystem()
+
+		app, err := api.NewApp(login, filesystem, client, log)
 		if err != nil {
-			log.WithError(err).Fatal("getting home directory")
+			log.WithError(err).Fatal("error with app constructor")
 		}
 
-		dirPath := filepath.Join(home, ".maestro")
-		configPath := filepath.Join(dirPath, "config.yaml")
-
-		config := make(map[string]interface{})
-		if _, err := os.Stat(configPath); err == nil {
-			log.Debug("reading file", configPath)
-			bts, err := ioutil.ReadFile(configPath)
-			if err != nil {
-				log.WithError(err).Fatal("error reading file", configPath)
-			}
-
-			log.Debug("unmarshaling file", configPath)
-			err = yaml.Unmarshal(bts, &config)
-			if err != nil {
-				log.WithError(err).Fatal("error unmarshaling file", configPath)
-			}
-		}
-
-		config["url"] = url
-		bts, err := yaml.Marshal(config)
+		closer, err := app.ListenAndLoginAndServe()
 		if err != nil {
-			log.WithError(err).Fatalf("error marshaling obj: %#v", config)
+			log.WithError(err).Fatal("error with app constructor")
 		}
-
-		log.Debug("mkdir ", dirPath)
-		os.MkdirAll(dirPath, os.ModePerm)
-
-		log.Debug("writing to file ", configPath)
-		ioutil.WriteFile(configPath, bts, 0644)
+		closer.Close()
 	},
 }
 

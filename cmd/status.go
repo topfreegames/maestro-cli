@@ -17,11 +17,11 @@ package cmd
 import (
 	jsonLib "encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/topfreegames/maestro-cli/extensions"
 )
 
 // statusCmd represents the status command
@@ -38,30 +38,37 @@ var statusCmd = &cobra.Command{
 		log := newLog("status")
 
 		schedulerName := args[0]
+		log.Debugf("reading %s", schedulerName)
 
-		url, err := getServerUrl()
+		filesystem := extensions.NewFileSystem()
+		config, err := extensions.ReadConfig(filesystem)
 		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
+			log.WithError(err).Fatal("probably you should login")
+		}
+		client := extensions.NewClient(config)
+		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+
+		body, status, err := client.Get(url)
+		if err != nil {
+			log.WithError(err).Fatal("error on get request")
 		}
 
-		url = fmt.Sprintf("%s/scheduler/%s", url, schedulerName)
-		resp, err := http.Get(url)
-		if err != nil {
-			log.WithError(err).Fatal("error executing GET request")
+		if status != http.StatusOK {
+			fmt.Println("Status:", status)
+			fmt.Println("Response:", string(body))
+			return
 		}
 
-		bts, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.WithError(err).Fatal("error parsing response")
-		}
-
-		body := make(map[string]interface{})
-		err = jsonLib.Unmarshal(bts, &body)
+		jsonBody := make(map[string]interface{})
+		err = jsonLib.Unmarshal(body, &jsonBody)
 		if err != nil {
 			log.WithError(err).Fatal("error unmarshaling response")
 		}
 
-		bts, err = jsonLib.MarshalIndent(body, "", "\t")
+		bts, err := jsonLib.MarshalIndent(jsonBody, "", "\t")
+		if err != nil {
+			log.WithError(err).Fatal("error parsing response")
+		}
 		fmt.Println(string(bts))
 	},
 }

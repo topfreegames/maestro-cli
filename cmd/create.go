@@ -15,13 +15,13 @@
 package cmd
 
 import (
-	"bytes"
+	jsonLib "encoding/json"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/topfreegames/maestro-cli/extensions"
 )
 
 // createCmd represents the create command
@@ -46,26 +46,27 @@ var createCmd = &cobra.Command{
 			log.WithError(err).Fatal("error while reading file")
 		}
 
-		reader := bytes.NewReader(bts)
-		url, err := getServerUrl()
+		scheduler := make(map[string]interface{})
+		err = jsonLib.Unmarshal(bts, &scheduler)
 		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
-		}
-		url = fmt.Sprintf("%s/scheduler", url)
-
-		resp, err := http.Post(url, "application/x-yaml", reader)
-		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
-		}
-		defer resp.Body.Close()
-
-		bts, err = ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.WithError(err).Fatal("error reading response")
+			log.WithError(err).Fatal("error while unmarshaling file")
 		}
 
-		fmt.Println("Status:", resp.StatusCode)
-		fmt.Println("Response:", string(bts))
+		filesystem := extensions.NewFileSystem()
+		config, err := extensions.ReadConfig(filesystem)
+		if err != nil {
+			log.WithError(err).Fatal("probably you should login")
+		}
+		client := extensions.NewClient(config)
+
+		url := fmt.Sprintf("%s/scheduler", config.ServerURL)
+		body, status, err := client.Post(url, scheduler)
+		if err != nil {
+			log.WithError(err).Fatal("error on post request")
+		}
+
+		fmt.Println("Status:", status)
+		fmt.Println("Response:", string(body))
 	},
 }
 

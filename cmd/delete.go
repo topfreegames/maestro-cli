@@ -16,11 +16,10 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/topfreegames/maestro-cli/extensions"
 )
 
 // deleteCmd represents the delete command
@@ -40,31 +39,21 @@ var deleteCmd = &cobra.Command{
 		schedulerName := args[0]
 		log.Debugf("reading %s", schedulerName)
 
-		url, err := getServerUrl()
+		filesystem := extensions.NewFileSystem()
+		config, err := extensions.ReadConfig(filesystem)
 		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
+			log.WithError(err).Fatal("probably you should login")
 		}
-		url = fmt.Sprintf("%s/scheduler/%s", url, schedulerName)
+		client := extensions.NewClient(config)
+		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
 
-		req, err := http.NewRequest("DELETE", url, nil)
+		body, status, err := client.Delete(url)
 		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
-		}
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
-		}
-		defer resp.Body.Close()
-
-		bts, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.WithError(err).Fatal("error reading response")
+			log.WithError(err).Fatal("error on delete request")
 		}
 
-		fmt.Println("Status:", resp.StatusCode)
-		fmt.Println("Response:", string(bts))
+		fmt.Println("Status:", status)
+		fmt.Println("Response:", string(body))
 	},
 }
 

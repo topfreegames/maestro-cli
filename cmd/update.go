@@ -15,15 +15,14 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 
 	jsonLib "encoding/json"
 
 	"github.com/spf13/cobra"
+	"github.com/topfreegames/maestro-cli/extensions"
 )
 
 // updateCmd represents the update command
@@ -48,42 +47,31 @@ var updateCmd = &cobra.Command{
 			log.WithError(err).Fatal("error reading scheduler config")
 		}
 
-		config := make(map[string]interface{})
-		err = jsonLib.Unmarshal(bts, &config)
+		scheduler := make(map[string]interface{})
+		err = jsonLib.Unmarshal(bts, &scheduler)
 		if err != nil {
 			log.WithError(err).Fatal("error unmarshaling scheduler config")
 		}
-		schedulerName, ok := config["name"].(string)
+		schedulerName, ok := scheduler["name"].(string)
 		if !ok {
 			log.WithError(err).Fatal("scheduler name should be a string")
 		}
 
-		reader := bytes.NewReader(bts)
-		url, err := getServerUrl()
+		filesystem := extensions.NewFileSystem()
+		config, err := extensions.ReadConfig(filesystem)
 		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
+			log.WithError(err).Fatal("probably you should login")
 		}
-		url = fmt.Sprintf("%s/scheduler/%s", url, schedulerName)
+		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+		client := extensions.NewClient(config)
 
-		req, err := http.NewRequest("PUT", url, reader)
+		body, status, err := client.Put(url, scheduler)
 		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
-		}
-
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			log.WithError(err).Fatal("error reading maestro config")
-		}
-		defer resp.Body.Close()
-
-		bts, err = ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.WithError(err).Fatal("error reading response")
+			log.WithError(err).Fatal("error on put request")
 		}
 
-		fmt.Println("Status:", resp.StatusCode)
-		fmt.Println("Response:", string(bts))
+		fmt.Println("Status:", status)
+		fmt.Println("Response:", string(body))
 	},
 }
 
