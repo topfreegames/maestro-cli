@@ -21,7 +21,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/topfreegames/maestro-cli/extensions"
 )
 
 // createCmd represents the create command
@@ -52,12 +51,11 @@ var createCmd = &cobra.Command{
 			log.WithError(err).Fatal("error while unmarshaling file")
 		}
 
-		filesystem := extensions.NewFileSystem()
-		config, err := extensions.ReadConfig(filesystem)
+		config, err := getConfig()
 		if err != nil {
-			log.WithError(err).Fatal("probably you should login")
+			log.WithError(err).Fatal("error getting client config")
 		}
-		client := extensions.NewClient(config)
+		client := getClient(config)
 
 		url := fmt.Sprintf("%s/scheduler", config.ServerURL)
 		body, status, err := client.Post(url, scheduler)

@@ -4,13 +4,13 @@ memo = "0a65262fdd00bfd5fb5dfa06b3970b3d493d14a37cdf4530a2e6a53fea5a0970"
   branch = "master"
   name = "github.com/Sirupsen/logrus"
   packages = ["."]
-  revision = "61e43dc76f7ee59a82bdf3d71033dc12bea4c77d"
+  revision = "85b1699d505667d13f8ac4478c1debbf85d6c5de"
 
 [[projects]]
   branch = "master"
   name = "github.com/golang/mock"
   packages = ["gomock"]
-  revision = "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9"
+  revision = "9e3cfa9279f269a4c4d703dacd64b05184cec28e"
 
 [[projects]]
   name = "github.com/gorilla/context"
@@ -22,7 +22,7 @@ memo = "0a65262fdd00bfd5fb5dfa06b3970b3d493d14a37cdf4530a2e6a53fea5a0970"
   branch = "master"
   name = "github.com/gorilla/mux"
   packages = ["."]
-  revision = "599cba5e7b6137d46ddf58fb1765f5d928e69604"
+  revision = "18fca31550181693b3a834a15b74b564b3605876"
 
 [[projects]]
   branch = "master"
@@ -34,52 +34,58 @@ memo = "0a65262fdd00bfd5fb5dfa06b3970b3d493d14a37cdf4530a2e6a53fea5a0970"
   branch = "master"
   name = "github.com/onsi/ginkgo"
   packages = [".","config","internal/codelocation","internal/containernode","internal/failer","internal/leafnodes","internal/remote","internal/spec","internal/spec_iterator","internal/specrunner","internal/suite","internal/testingtproxy","internal/writer","reporters","reporters/stenographer","reporters/stenographer/support/go-colorable","reporters/stenographer/support/go-isatty","types"]
-  revision = "67b9df7f55fe1165fd9ad49aca7754cce01a42b8"
+  revision = "a1f616c97771e46da1722d3aa9dcde0a43f55682"
 
 [[projects]]
   branch = "master"
   name = "github.com/onsi/gomega"
   packages = [".","format","internal/assertion","internal/asyncassertion","internal/oraclematcher","internal/testingtsupport","matchers","matchers/support/goraph/bipartitegraph","matchers/support/goraph/edge","matchers/support/goraph/node","matchers/support/goraph/util","types"]
-  revision = "e85f63af4302dc0e4277c6008ecf803f1d80e4f0"
+  revision = "39a54bd3c3bbfe1c331a9b3207e92134c77ed812"
 
 [[projects]]
   branch = "master"
   name = "github.com/satori/go.uuid"
   packages = ["."]
-  revision = "b061729afc07e77a8aa4fad0a2fd840958f1942a"
+  revision = "5bf94b69c6b68ee1b541973bb8e1144db23a194b"
 
 [[projects]]
   branch = "master"
   name = "github.com/spf13/afero"
   packages = [".","mem"]
-  revision = "72b31426848c6ef12a7a8e216708cb0d1530f074"
+  revision = "9be650865eab0c12963d8753212f4f9c66cdcf12"
 
 [[projects]]
   branch = "master"
   name = "github.com/spf13/cobra"
   packages = ["."]
-  revision = "35136c09d8da66b901337c6e86fd8e88a1a255bd"
+  revision = "b4dbd37a01839e0653eec12aa4bbb2a2ce7b2a37"
 
 [[projects]]
   branch = "master"
   name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "9ff6c6923cfffbcd502984b8e0c80539a94968b7"
+  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["html","html/atom","html/charset"]
+  revision = "ddf80d0970594e2e4cccf5a98861cad3d9eaa4cd"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "7a6e5648d140666db5d920909e082ca00a87ba2c"
+  revision = "fb4cac33e3196ff7f507ab9b2d2a44b0142f5b5a"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
-  packages = ["internal/gen","internal/triegen","internal/ucd","transform","unicode/cldr","unicode/norm"]
-  revision = "506f9d5c962f284575e88337e7d9296d27e729d3"
+  packages = ["encoding","encoding/charmap","encoding/htmlindex","encoding/internal","encoding/internal/identifier","encoding/japanese","encoding/korean","encoding/simplifiedchinese","encoding/traditionalchinese","encoding/unicode","internal/gen","internal/tag","internal/triegen","internal/ucd","internal/utf8internal","language","runes","transform","unicode/cldr","unicode/norm"]
+  revision = "9e2f80a6ba7ed4ba13e0cd4b1f094bf916875735"
 
 [[projects]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "4c78c975fe7c825c6d1466c42be594d1d6f3aba6"
+  revision = "cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b"

@@ -19,7 +19,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/topfreegames/maestro-cli/extensions"
 )
 
 // deleteCmd represents the delete command
@@ -39,12 +38,12 @@ var deleteCmd = &cobra.Command{
 		schedulerName := args[0]
 		log.Debugf("reading %s", schedulerName)
 
-		filesystem := extensions.NewFileSystem()
-		config, err := extensions.ReadConfig(filesystem)
+		config, err := getConfig()
 		if err != nil {
-			log.WithError(err).Fatal("probably you should login")
+			log.WithError(err).Fatal("error getting client config")
 		}
-		client := extensions.NewClient(config)
+		client := getClient(config)
+
 		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
 
 		body, status, err := client.Delete(url)

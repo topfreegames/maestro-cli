@@ -22,7 +22,6 @@ import (
 	jsonLib "encoding/json"
 
 	"github.com/spf13/cobra"
-	"github.com/topfreegames/maestro-cli/extensions"
 )
 
 // updateCmd represents the update command
@@ -57,13 +56,13 @@ var updateCmd = &cobra.Command{
 			log.WithError(err).Fatal("scheduler name should be a string")
 		}
 
-		filesystem := extensions.NewFileSystem()
-		config, err := extensions.ReadConfig(filesystem)
+		config, err := getConfig()
 		if err != nil {
-			log.WithError(err).Fatal("probably you should login")
+			log.WithError(err).Fatal("error getting client config")
 		}
+		client := getClient(config)
+
 		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
-		client := extensions.NewClient(config)
 
 		body, status, err := client.Put(url, scheduler)
 		if err != nil {
