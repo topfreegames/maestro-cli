@@ -18,3 +18,4 @@ bin
 # Vim temp files
 *.swp
 
+.DS_Store

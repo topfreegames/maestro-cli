@@ -40,9 +40,8 @@ var schedulerCmd = &cobra.Command{
 		client := getClient(config)
 		var url string
 		if len(args) > 0 {
-			//TODO
-		} else {
-			url = fmt.Sprintf("%s/scheduler", config.ServerURL)
+			schedulerName := args[0]
+			url = fmt.Sprintf("%s/scheduler/%s?config", config.ServerURL, schedulerName)
 			body, status, err := client.Get(url)
 			if err != nil {
 				log.WithError(err).Fatal("error on get request")
@@ -54,16 +53,36 @@ var schedulerCmd = &cobra.Command{
 				return
 			}
 
-			var response *schedulerListResponse
-			err = jsonLib.Unmarshal(body, &response)
+			obj := make(map[string]interface{})
+			err = jsonLib.Unmarshal(body, &obj)
 			if err != nil {
-				log.WithError(err).Fatal("error unmarshaling response")
+				log.WithError(err).Fatal("error on get request")
 			}
 
-			for _, name := range response.Schedulers {
-				fmt.Println(name)
-			}
+			fmt.Println(obj["yaml"])
+			return
+		}
 
+		url = fmt.Sprintf("%s/scheduler", config.ServerURL)
+		body, status, err := client.Get(url)
+		if err != nil {
+			log.WithError(err).Fatal("error on get request")
+		}
+
+		if status != http.StatusOK {
+			fmt.Println("Status:", status)
+			fmt.Println("Response:", string(body))
+			return
+		}
+
+		var response *schedulerListResponse
+		err = jsonLib.Unmarshal(body, &response)
+		if err != nil {
+			log.WithError(err).Fatal("error unmarshaling response")
+		}
+
+		for _, name := range response.Schedulers {
+			fmt.Println(name)
 		}
 	},
 }
