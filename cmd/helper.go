@@ -15,6 +15,10 @@
 package cmd
 
 import (
+	"encoding/json"
+	"fmt"
+	"strings"
+
 	"github.com/Sirupsen/logrus"
 )
 
@@ -38,4 +42,24 @@ func newLog(cmdName string) *logrus.Logger {
 	log.Level = ll
 
 	return log
+}
+
+func printError(bodyResp []byte) error {
+	bodyMap := make(map[string]interface{})
+	err := json.Unmarshal(bodyResp, &bodyMap)
+	if err != nil {
+		return err
+	}
+
+	errMsg, contains := bodyMap["error"]
+	msg := errMsg.(string)
+	if contains && strings.Contains(msg, "access token") {
+		fmt.Println("You are not logged in. Please log in and try again.")
+		return nil
+	}
+
+	for key, value := range bodyMap {
+		fmt.Printf("%s: %v\n", key, value)
+	}
+	return nil
 }

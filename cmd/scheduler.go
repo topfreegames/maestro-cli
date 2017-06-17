@@ -48,8 +48,7 @@ var schedulerCmd = &cobra.Command{
 			}
 
 			if status != http.StatusOK {
-				fmt.Println("Status:", status)
-				fmt.Println("Response:", string(body))
+				printError(body)
 				return
 			}
 
@@ -70,8 +69,7 @@ var schedulerCmd = &cobra.Command{
 		}
 
 		if status != http.StatusOK {
-			fmt.Println("Status:", status)
-			fmt.Println("Response:", string(body))
+			printError(body)
 			return
 		}
 

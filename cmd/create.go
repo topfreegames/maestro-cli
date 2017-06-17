@@ -18,6 +18,7 @@ import (
 	jsonLib "encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -57,14 +58,20 @@ var createCmd = &cobra.Command{
 		}
 		client := getClient(config)
 
+		fmt.Println("Creating scheduler, this may take a few minutes...")
+
 		url := fmt.Sprintf("%s/scheduler", config.ServerURL)
 		body, status, err := client.Post(url, scheduler)
 		if err != nil {
 			log.WithError(err).Fatal("error on post request")
 		}
+		if status != http.StatusCreated {
+			printError(body)
+			return
+		}
 
-		fmt.Println("Status:", status)
-		fmt.Println("Response:", string(body))
+		fmt.Println("Successfully created scheduler")
+		fmt.Println(string(bts))
 	},
 }
 

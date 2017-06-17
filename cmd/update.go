@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 
 	jsonLib "encoding/json"
@@ -62,15 +63,20 @@ var updateCmd = &cobra.Command{
 		}
 		client := getClient(config)
 
-		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+		fmt.Println("Updating scheduler, this may take a few minutes...")
 
+		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
 		body, status, err := client.Put(url, scheduler)
 		if err != nil {
 			log.WithError(err).Fatal("error on put request")
 		}
+		if status != http.StatusOK {
+			printError(body)
+			return
+		}
 
-		fmt.Println("Status:", status)
-		fmt.Println("Response:", string(body))
+		fmt.Println("Successfully updated scheduler")
+		fmt.Println(string(bts))
 	},
 }
 

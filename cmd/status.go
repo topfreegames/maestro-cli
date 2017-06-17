@@ -52,8 +52,7 @@ var statusCmd = &cobra.Command{
 		}
 
 		if status != http.StatusOK {
-			fmt.Println("Status:", status)
-			fmt.Println("Response:", string(body))
+			printError(body)
 			return
 		}
 

@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -44,15 +45,19 @@ var deleteCmd = &cobra.Command{
 		}
 		client := getClient(config)
 
-		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+		fmt.Println("Deleting scheduler, this may take a few minutes...")
 
+		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
 		body, status, err := client.Delete(url)
 		if err != nil {
 			log.WithError(err).Fatal("error on delete request")
 		}
+		if status != http.StatusOK {
+			printError(body)
+			return
+		}
 
-		fmt.Println("Status:", status)
-		fmt.Println("Response:", string(body))
+		fmt.Println("Successfully deleted scheduler")
 	},
 }
 
