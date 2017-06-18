@@ -36,28 +36,29 @@ var deleteCmd = &cobra.Command{
 
 		log := newLog("delete")
 
-		schedulerName := args[0]
-		log.Debugf("reading %s", schedulerName)
-
 		config, err := getConfig()
 		if err != nil {
 			log.WithError(err).Fatal("error getting client config")
 		}
 		client := getClient(config)
 
-		fmt.Println("Deleting scheduler, this may take a few minutes...")
+		for _, schedulerName := range args {
+			log.Debugf("reading %s", schedulerName)
 
-		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
-		body, status, err := client.Delete(url)
-		if err != nil {
-			log.WithError(err).Fatal("error on delete request")
-		}
-		if status != http.StatusOK {
-			printError(body)
-			return
-		}
+			fmt.Printf("Deleting scheduler %s, this may take a few minutes...\n", schedulerName)
 
-		fmt.Println("Successfully deleted scheduler")
+			url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+			body, status, err := client.Delete(url)
+			if err != nil {
+				log.WithError(err).Fatal("error on delete request")
+			}
+			if status != http.StatusOK {
+				printError(body)
+				return
+			}
+
+			fmt.Println("Successfully deleted scheduler", schedulerName)
+		}
 	},
 }
 
