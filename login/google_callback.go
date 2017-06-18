@@ -18,7 +18,8 @@ import (
 )
 
 func SaveAccessToken(
-	state, code, expectedState, serverURL string,
+	state, code, expectedState, serverURL,
+	context string,
 	fs interfaces.FileSystem,
 	client interfaces.Client,
 ) error {
@@ -42,6 +43,6 @@ func SaveAccessToken(
 	token := bodyObj["token"].(string)
 
 	c := extensions.NewConfig(token, serverURL)
-	err = c.Write(fs)
+	err = c.Write(fs, context)
 	return err
 }

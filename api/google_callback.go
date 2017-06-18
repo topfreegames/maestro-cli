@@ -75,6 +75,7 @@ func (o *OAuthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 	err := login.SaveAccessToken(
 		state, code, o.app.Login.OAuthState, o.app.Login.ServerURL,
+		o.app.Context,
 		o.fs,
 		o.client,
 	)

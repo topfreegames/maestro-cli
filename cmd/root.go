@@ -17,6 +17,8 @@ import (
 // Verbose determines how verbose maestro will run under
 var Verbose int
 
+var context string
+
 // RootCmd is the root command for maestro CLI application
 var RootCmd = &cobra.Command{
 	Use:   "maestro-cli",
@@ -37,4 +39,5 @@ func init() {
 		&Verbose, "verbose", "v", 0,
 		"Verbosity level => v0: Error, v1=Warning, v2=Info, v3=Debug",
 	)
+	RootCmd.PersistentFlags().StringVarP(&context, "context", "c", "prod", "Maestro context, use it to manage different maestro clusters.")
 }

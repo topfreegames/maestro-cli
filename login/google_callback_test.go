@@ -35,13 +35,14 @@ var _ = Describe("GoogleCallback", func() {
 		configDir     string
 		configPath    string
 		url           string
+		context       = "test"
 	)
 
 	BeforeEach(func() {
 		usr, err := user.Current()
 		Expect(err).NotTo(HaveOccurred())
 		configDir = filepath.Join(usr.HomeDir, ".maestro")
-		configPath = filepath.Join(configDir, "config.yaml")
+		configPath = filepath.Join(configDir, "config-test.yaml")
 		url = fmt.Sprintf("%s/access?code=%s", serverURL, code)
 	})
 
@@ -66,6 +67,7 @@ var _ = Describe("GoogleCallback", func() {
 
 		err = SaveAccessToken(
 			state, code, expectedState, serverURL,
+			context,
 			filesystem,
 			client,
 		)
@@ -76,6 +78,7 @@ var _ = Describe("GoogleCallback", func() {
 		state := "random-state"
 		err := SaveAccessToken(
 			state, code, expectedState, serverURL,
+			context,
 			filesystem,
 			client,
 		)
@@ -89,6 +92,7 @@ var _ = Describe("GoogleCallback", func() {
 
 		err := SaveAccessToken(
 			state, code, expectedState, serverURL,
+			context,
 			filesystem,
 			client,
 		)
@@ -102,6 +106,7 @@ var _ = Describe("GoogleCallback", func() {
 
 		err := SaveAccessToken(
 			state, code, expectedState, serverURL,
+			context,
 			filesystem,
 			client,
 		)

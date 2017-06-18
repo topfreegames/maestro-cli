@@ -45,7 +45,7 @@ var loginCmd = &cobra.Command{
 		client := extensions.NewClient(nil)
 		filesystem := extensions.NewFileSystem()
 
-		app, err := api.NewApp(login, filesystem, client, log)
+		app, err := api.NewApp(login, filesystem, client, log, context)
 		if err != nil {
 			log.WithError(err).Fatal("error with app constructor")
 		}

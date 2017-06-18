@@ -8,6 +8,7 @@
 package extensions
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/user"
@@ -50,18 +51,19 @@ func getDirPath() (string, error) {
 	return dirPath, nil
 }
 
-func getConfigPath() (string, error) {
+func getConfigPath(context string) (string, error) {
 	dir, err := getDirPath()
 	if err != nil {
 		return "", err
 	}
-	configPath := filepath.Join(dir, "config.yaml")
+	fileName := fmt.Sprintf("config-%s.yaml", context)
+	configPath := filepath.Join(dir, fileName)
 	return configPath, nil
 }
 
 // ReadConfig from file
-func ReadConfig(fs interfaces.FileSystem) (*Config, error) {
-	configPath, err := getConfigPath()
+func ReadConfig(fs interfaces.FileSystem, context string) (*Config, error) {
+	configPath, err := getConfigPath(context)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +83,8 @@ func ReadConfig(fs interfaces.FileSystem) (*Config, error) {
 }
 
 // Write the config file to disk
-func (c *Config) Write(fs interfaces.FileSystem) error {
-	configPath, err := getConfigPath()
+func (c *Config) Write(fs interfaces.FileSystem, context string) error {
+	configPath, err := getConfigPath(context)
 	if err != nil {
 		return err
 	}

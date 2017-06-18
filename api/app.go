@@ -30,6 +30,7 @@ type App struct {
 	FileSystem interfaces.FileSystem
 	Client     interfaces.Client
 	Listener   net.Listener
+	Context    string
 }
 
 func NewApp(
@@ -37,6 +38,7 @@ func NewApp(
 	fs interfaces.FileSystem,
 	client interfaces.Client,
 	logger logrus.FieldLogger,
+	context string,
 ) (*App, error) {
 	app := &App{
 		Address:    ":57460",
@@ -44,6 +46,7 @@ func NewApp(
 		Login:      login,
 		FileSystem: fs,
 		Client:     client,
+		Context:    context,
 	}
 	err := app.configureApp()
 	return app, err
