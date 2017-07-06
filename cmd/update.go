@@ -15,10 +15,12 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	yaml "gopkg.in/yaml.v2"
 
@@ -42,19 +44,9 @@ var updateCmd = &cobra.Command{
 		filePath := args[0]
 		log.Debugf("reading %s", filePath)
 
-		bts, err := ioutil.ReadFile(filePath)
+		file, err := ioutil.ReadFile(filePath)
 		if err != nil {
 			log.WithError(err).Fatal("error reading scheduler config")
-		}
-
-		scheduler := make(map[string]interface{})
-		err = yaml.Unmarshal(bts, &scheduler)
-		if err != nil {
-			log.WithError(err).Fatal("error unmarshaling scheduler config")
-		}
-		schedulerName, ok := scheduler["name"].(string)
-		if !ok {
-			log.WithError(err).Fatal("scheduler name should be a string")
 		}
 
 		config, err := getConfig()
@@ -65,18 +57,31 @@ var updateCmd = &cobra.Command{
 
 		fmt.Println("Updating scheduler, this may take a few minutes...")
 
-		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
-		body, status, err := client.Put(url, scheduler)
-		if err != nil {
-			log.WithError(err).Fatal("error on put request")
-		}
-		if status != http.StatusOK {
-			printError(body)
-			return
-		}
+		listBytes := bytes.Split(file, []byte("---"))
+		for _, bts := range listBytes {
+			if strings.TrimSpace(string(bts)) == "" {
+				continue
+			}
 
-		fmt.Println("Successfully updated scheduler")
-		fmt.Println(string(bts))
+			yamlFile := make(map[string]interface{})
+			err = yaml.Unmarshal(bts, &yamlFile)
+			if err != nil {
+				log.WithError(err).Fatal("error reading scheduler config")
+			}
+			schedulerName := yamlFile["name"].(string)
+			url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+			body, status, err := client.Put(url, string(bts))
+			if err != nil {
+				log.WithError(err).Fatal("error on put request")
+			}
+			if status != http.StatusOK {
+				printError(body)
+				return
+			}
+
+			fmt.Println("Successfully updated scheduler", schedulerName)
+			fmt.Println(string(bts))
+		}
 	},
 }
 

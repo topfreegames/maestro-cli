@@ -20,8 +20,6 @@ import (
 	"net/http"
 	"os"
 
-	yaml "gopkg.in/yaml.v2"
-
 	"github.com/spf13/cobra"
 )
 
@@ -47,12 +45,6 @@ var createCmd = &cobra.Command{
 			log.WithError(err).Fatal("error while reading file")
 		}
 
-		scheduler := make(map[string]interface{})
-		err = yaml.Unmarshal(bts, &scheduler)
-		if err != nil {
-			log.WithError(err).Fatal("error while unmarshaling file")
-		}
-
 		config, err := getConfig()
 		if err != nil {
 			log.WithError(err).Fatal("error getting client config")
@@ -62,7 +54,7 @@ var createCmd = &cobra.Command{
 		fmt.Println("Creating scheduler, this may take a few minutes...")
 
 		url := fmt.Sprintf("%s/scheduler", config.ServerURL)
-		body, status, err := client.Post(url, scheduler)
+		body, status, err := client.Post(url, string(bts))
 		if err != nil {
 			log.WithError(err).Fatal("error on post request")
 		}

@@ -8,13 +8,11 @@
 package extensions
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
-
-	yaml "gopkg.in/yaml.v2"
 )
 
 // Client struct
@@ -54,12 +52,12 @@ func (c *Client) Get(url string) ([]byte, int, error) {
 }
 
 // Put does a put request
-func (c *Client) Put(url string, body map[string]interface{}) ([]byte, int, error) {
+func (c *Client) Put(url string, body string) ([]byte, int, error) {
 	return c.putOrPost("PUT", url, body)
 }
 
 // Post does a post request
-func (c *Client) Post(url string, body map[string]interface{}) ([]byte, int, error) {
+func (c *Client) Post(url string, body string) ([]byte, int, error) {
 	return c.putOrPost("POST", url, body)
 }
 
@@ -83,12 +81,8 @@ func (c *Client) Delete(url string) ([]byte, int, error) {
 	return responseBody, res.StatusCode, nil
 }
 
-func (c *Client) putOrPost(method, url string, body map[string]interface{}) ([]byte, int, error) {
-	ioBody, err := ioReader(body)
-	if err != nil {
-		fmt.Println("reader error")
-		return nil, 0, err
-	}
+func (c *Client) putOrPost(method, url string, body string) ([]byte, int, error) {
+	ioBody := strings.NewReader(body)
 
 	req, err := http.NewRequest(method, url, ioBody)
 	if err != nil {
@@ -116,12 +110,4 @@ func (c *Client) addAuthHeader(req *http.Request) {
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-}
-
-func ioReader(body map[string]interface{}) (*bytes.Reader, error) {
-	bodyBytes, err := yaml.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	return bytes.NewReader(bodyBytes), nil
 }

@@ -10,7 +10,7 @@ package interfaces
 //Client interface
 type Client interface {
 	Get(url string) ([]byte, int, error)
-	Put(url string, body map[string]interface{}) ([]byte, int, error)
-	Post(url string, body map[string]interface{}) ([]byte, int, error)
+	Put(url string, body string) ([]byte, int, error)
+	Post(url string, body string) ([]byte, int, error)
 	Delete(url string) ([]byte, int, error)
 }

@@ -40,7 +40,7 @@ func (_mr *_MockClientRecorder) Get(arg0 interface{}) *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "Get", arg0)
 }
 
-func (_m *MockClient) Put(url string, body map[string]interface{}) ([]byte, int, error) {
+func (_m *MockClient) Put(url string, body string) ([]byte, int, error) {
 	ret := _m.ctrl.Call(_m, "Put", url, body)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(int)
@@ -52,7 +52,7 @@ func (_mr *_MockClientRecorder) Put(arg0, arg1 interface{}) *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "Put", arg0, arg1)
 }
 
-func (_m *MockClient) Post(url string, body map[string]interface{}) ([]byte, int, error) {
+func (_m *MockClient) Post(url string, body string) ([]byte, int, error) {
 	ret := _m.ctrl.Call(_m, "Post", url, body)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(int)
