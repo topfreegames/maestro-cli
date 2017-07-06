@@ -1,11 +1,4 @@
 mode: atomic
-github.com/topfreegames/maestro-cli/login/google_callback.go:24.9,25.28 1 4
-github.com/topfreegames/maestro-cli/login/google_callback.go:30.2,32.16 3 3
-github.com/topfreegames/maestro-cli/login/google_callback.go:36.2,36.29 1 2
-github.com/topfreegames/maestro-cli/login/google_callback.go:40.2,46.12 6 1
-github.com/topfreegames/maestro-cli/login/google_callback.go:25.28,28.3 2 1
-github.com/topfreegames/maestro-cli/login/google_callback.go:32.16,34.3 1 1
-github.com/topfreegames/maestro-cli/login/google_callback.go:36.29,38.3 1 1
 github.com/topfreegames/maestro-cli/login/login.go:27.71,28.23 1 5
 github.com/topfreegames/maestro-cli/login/login.go:31.2,35.3 1 5
 github.com/topfreegames/maestro-cli/login/login.go:28.23,30.3 1 0
@@ -21,3 +14,10 @@ github.com/topfreegames/maestro-cli/login/login.go:71.2,72.43 2 0
 github.com/topfreegames/maestro-cli/login/login.go:63.17,65.33 2 0
 github.com/topfreegames/maestro-cli/login/login.go:66.16,67.15 1 0
 github.com/topfreegames/maestro-cli/login/login.go:68.10,69.19 1 0
+github.com/topfreegames/maestro-cli/login/google_callback.go:25.9,26.28 1 4
+github.com/topfreegames/maestro-cli/login/google_callback.go:31.2,33.16 3 3
+github.com/topfreegames/maestro-cli/login/google_callback.go:37.2,37.29 1 2
+github.com/topfreegames/maestro-cli/login/google_callback.go:41.2,47.12 6 1
+github.com/topfreegames/maestro-cli/login/google_callback.go:26.28,29.3 2 1
+github.com/topfreegames/maestro-cli/login/google_callback.go:33.16,35.3 1 1
+github.com/topfreegames/maestro-cli/login/google_callback.go:37.29,39.3 1 1

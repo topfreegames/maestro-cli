@@ -9,11 +9,12 @@ package extensions
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 // Client struct
@@ -118,7 +119,7 @@ func (c *Client) addAuthHeader(req *http.Request) {
 }
 
 func ioReader(body map[string]interface{}) (*bytes.Reader, error) {
-	bodyBytes, err := json.Marshal(body)
+	bodyBytes, err := yaml.Marshal(body)
 	if err != nil {
 		return nil, err
 	}

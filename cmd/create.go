@@ -15,11 +15,12 @@
 package cmd
 
 import (
-	jsonLib "encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	yaml "gopkg.in/yaml.v2"
 
 	"github.com/spf13/cobra"
 )
@@ -47,7 +48,7 @@ var createCmd = &cobra.Command{
 		}
 
 		scheduler := make(map[string]interface{})
-		err = jsonLib.Unmarshal(bts, &scheduler)
+		err = yaml.Unmarshal(bts, &scheduler)
 		if err != nil {
 			log.WithError(err).Fatal("error while unmarshaling file")
 		}
