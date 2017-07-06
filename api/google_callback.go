@@ -8,6 +8,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -39,7 +40,7 @@ const UnauthorizedIndex = `
 </head>
 <body>
   <h1>Unauthorized</h1>
-  Your email is not authorized to use Maestro
+  %s
 </body>
 </html>
 `
@@ -82,7 +83,10 @@ func (o *OAuthCallbackHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, UnauthorizedIndex)
+
+		errResp := make(map[string]interface{})
+		json.Unmarshal([]byte(err.Error()), &errResp)
+		io.WriteString(w, fmt.Sprintf(UnauthorizedIndex, errResp["description"]))
 		o.app.Listener.Close()
 		return
 	}

@@ -44,22 +44,22 @@ func newLog(cmdName string) *logrus.Logger {
 	return log
 }
 
-func printError(bodyResp []byte) error {
+func printError(bodyResp []byte) {
 	bodyMap := make(map[string]interface{})
 	err := json.Unmarshal(bodyResp, &bodyMap)
 	if err != nil {
-		return err
+		fmt.Println(string(bodyResp))
+		return
 	}
 
 	errMsg, contains := bodyMap["error"]
 	msg := errMsg.(string)
 	if contains && strings.Contains(msg, "access token") {
 		fmt.Println("You are not logged in. Please log in and try again.")
-		return nil
+		return
 	}
 
 	for key, value := range bodyMap {
 		fmt.Printf("%s: %v\n", key, value)
 	}
-	return nil
 }
