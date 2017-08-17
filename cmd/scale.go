@@ -23,34 +23,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var schedulerMin uint
+var replicas int
 
-// minCmd represents the min command
-var minCmd = &cobra.Command{
-	Use:   "min",
-	Short: "sets scheduler's min",
-	Long: `updates scheduler with new min, changing only the scheduler's min field. If the min is the same,
-	nothing is done.`,
+// scaleCmd represents the scale command
+var scaleCmd = &cobra.Command{
+	Use:   "scale",
+	Short: "sets the number of replicas",
+	Long:  `scales the scheduler up or down to match the number of replicas specified.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			fmt.Println("Error: inform scheduler name")
 			os.Exit(1)
 		}
 
-		log := newLog("setImage")
-
 		schedulerName := args[0]
-		if schedulerName == "" {
-			fmt.Println("Error: inform scheduler name")
+
+		if replicas < 0 {
+			fmt.Println("Error: inform replicas >= 0")
 			os.Exit(1)
 		}
 
-		if schedulerMin < 0 {
-			fmt.Printf("Error: min must be greater or equal than zero. Informed min was %d", schedulerMin)
-			os.Exit(1)
-		}
-
-		log.Debugf("updating %s", schedulerName)
+		log := newLog("scale")
 
 		config, err := getConfig()
 		if err != nil {
@@ -58,24 +51,27 @@ var minCmd = &cobra.Command{
 		}
 		client := getClient(config)
 
-		fmt.Println("Updating scheduler image, this may take a few minutes...")
-		url := fmt.Sprintf("%s/scheduler/%s/min", config.ServerURL, schedulerName)
-		reqBody := map[string]interface{}{"min": schedulerMin}
+		log.Debugf("reading %s", schedulerName)
+
+		fmt.Printf("Scaling scheduler '%s' to have %d rooms, this may take a few minutes...\n", schedulerName, replicas)
+
+		reqBody := map[string]interface{}{"replicas": replicas}
 		reqBts, _ := json.Marshal(reqBody)
-		body, status, err := client.Put(url, string(reqBts))
+		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+		body, status, err := client.Post(url, string(reqBts))
 		if err != nil {
-			log.WithError(err).Fatal("error on put request")
+			log.WithError(err).Fatal("error on post request")
 		}
 		if status != http.StatusOK {
 			printError(body)
 			return
 		}
 
-		fmt.Printf("Successfully updated scheduler '%s' to min '%d'\n", schedulerName, schedulerMin)
+		fmt.Printf("Successfully scaled scheduler '%s' to %d replicas\n", schedulerName, replicas)
 	},
 }
 
 func init() {
-	setCmd.AddCommand(minCmd)
-	minCmd.Flags().UintVarP(&schedulerMin, "min", "m", uint(0), "new scheduler min")
+	RootCmd.AddCommand(scaleCmd)
+	scaleCmd.Flags().IntVarP(&replicas, "replicas", "r", -1, "Total replicas of rooms to have")
 }

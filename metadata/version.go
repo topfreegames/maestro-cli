@@ -7,4 +7,4 @@
 
 package metadata
 
-var Version string = "v0.5.1"
+var Version string = "v0.5.2"

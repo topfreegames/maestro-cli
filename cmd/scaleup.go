@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -54,10 +55,12 @@ var scaleupCmd = &cobra.Command{
 
 		fmt.Printf("Scaling up scheduler '%s' in %d rooms, this may take a few minutes...\n", schedulerName, amount)
 
-		url := fmt.Sprintf("%s/scheduler/%s?scaleup=%d", config.ServerURL, schedulerName, amount)
-		body, status, err := client.Post(url, "")
+		reqBody := map[string]interface{}{"scaleup": amount}
+		reqBts, _ := json.Marshal(reqBody)
+		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+		body, status, err := client.Post(url, string(reqBts))
 		if err != nil {
-			log.WithError(err).Fatal("error on delete request")
+			log.WithError(err).Fatal("error on post request")
 		}
 		if status != http.StatusOK {
 			printError(body)
