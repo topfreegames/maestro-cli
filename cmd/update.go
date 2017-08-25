@@ -27,6 +27,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var maxsurge string
+
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
 	Use:   "update",
@@ -69,7 +71,7 @@ var updateCmd = &cobra.Command{
 				log.WithError(err).Fatal("error reading scheduler config")
 			}
 			schedulerName := yamlFile["name"].(string)
-			url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
+			url := fmt.Sprintf("%s/scheduler/%s?maxsurge=%s", config.ServerURL, schedulerName, maxsurge)
 			body, status, err := client.Put(url, string(bts))
 			if err != nil {
 				log.WithError(err).Fatal("error on put request")
@@ -87,4 +89,5 @@ var updateCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(updateCmd)
+	updateCmd.Flags().StringVarP(&maxsurge, "maxsurge", "m", "", "percentage of the rooms to update at each step. Default is 25%.")
 }

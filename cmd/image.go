@@ -53,7 +53,7 @@ var imageCmd = &cobra.Command{
 		client := getClient(config)
 
 		fmt.Println("Updating scheduler image, this may take a few minutes...")
-		url := fmt.Sprintf("%s/scheduler/%s/image", config.ServerURL, schedulerName)
+		url := fmt.Sprintf("%s/scheduler/%s/image?maxsurge=%s", config.ServerURL, schedulerName, maxsurge)
 		reqBody := map[string]interface{}{"image": imageName}
 		reqBts, _ := json.Marshal(reqBody)
 		body, status, err := client.Put(url, string(reqBts))
@@ -72,4 +72,5 @@ var imageCmd = &cobra.Command{
 func init() {
 	setCmd.AddCommand(imageCmd)
 	imageCmd.Flags().StringVarP(&imageName, "image", "i", "", "new image name")
+	imageCmd.Flags().StringVarP(&maxsurge, "maxsurge", "m", "", "percentage of the rooms to update at each step. Default is 25%.")
 }
