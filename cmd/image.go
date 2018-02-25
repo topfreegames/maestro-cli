@@ -73,7 +73,7 @@ var imageCmd = &cobra.Command{
 func init() {
 	setCmd.AddCommand(imageCmd)
 	imageCmd.Flags().StringVarP(&imageName, "image", "i", "", "new image name")
-	imageCmd.Flags().StringVar(&container, "container", "container", "container name")
+	imageCmd.Flags().StringVar(&container, "container", "", "container name")
 
 	imageCmd.Flags().StringVarP(&maxsurge, "maxsurge", "m", "", "percentage of the rooms to update at each step. Default is 25%.")
 }

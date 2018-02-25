@@ -26,6 +26,8 @@ type schedulerListResponse struct {
 	Schedulers []string `json:"schedulers"`
 }
 
+var version string
+
 // schedulerCmd represents the scheduler command
 var schedulerCmd = &cobra.Command{
 	Use:   "scheduler",
@@ -41,7 +43,8 @@ var schedulerCmd = &cobra.Command{
 		var url string
 		if len(args) > 0 {
 			schedulerName := args[0]
-			url = fmt.Sprintf("%s/scheduler/%s?config", config.ServerURL, schedulerName)
+			url = fmt.Sprintf("%s/scheduler/%s/config?version=%s",
+				config.ServerURL, schedulerName, version)
 			body, status, err := client.Get(url)
 			if err != nil {
 				log.WithError(err).Fatal("error on get request")
@@ -87,4 +90,5 @@ var schedulerCmd = &cobra.Command{
 
 func init() {
 	getCmd.AddCommand(schedulerCmd)
+	schedulerCmd.Flags().StringVar(&version, "version", "", "scheduler release version")
 }
