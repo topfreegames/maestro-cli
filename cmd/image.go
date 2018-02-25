@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2018 TopFreeGames backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
