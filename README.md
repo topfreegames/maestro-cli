@@ -26,3 +26,15 @@ maestro update path/to/config/file.yaml
 ```
 maestro status scheduler-name
 ```
+* Get scheduler releases
+```
+maestro releases scheduler-name
+```
+* Rollback to previous release
+```
+maestro rollback scheduler-name v1
+```
+* Edit a scheduler and update it
+```
+maestro edit scheduler-name
+```
