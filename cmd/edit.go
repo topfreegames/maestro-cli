@@ -26,11 +26,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var editor string
+
+func getEditor() string {
+	if editor == "" {
+		editor = os.Getenv("EDITOR")
+	}
+
+	if editor == "" {
+		editor = "vi"
+	}
+
+	return editor
+}
+
 // editCmd represents the edit command
 var editCmd = &cobra.Command{
 	Use:   "edit SCHEDULER_NAME",
 	Short: "edit a scheduler",
-	Long:  `edit opens default editor and updates the scheduler on save if scheduler is valid`,
+	Long: `edit opens default editor and updates the scheduler on save if scheduler is valid.
+	It chooses which editor to use by reading $EDITOR variable; if it's unset, maestro chooses vi as default.
+	To specify which editor to use, use the --editor flag.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("get scheduler")
 		config, err := getConfig()
@@ -38,6 +54,11 @@ var editCmd = &cobra.Command{
 			log.WithError(err).Fatal("error getting client config")
 		}
 		client := getClient(config)
+
+		if len(args) == 0 {
+			log.Fatal("error: specify scheduler name")
+			return
+		}
 
 		// Get config from server
 		schedulerName := args[0]
@@ -67,7 +88,7 @@ var editCmd = &cobra.Command{
 		}
 
 		// Open on editor
-		editor := os.Getenv("EDITOR")
+		editor = getEditor()
 		editorCmd := exec.Command(editor, fileName)
 		editorCmd.Stdin = os.Stdin
 		editorCmd.Stdout = os.Stdout
@@ -123,4 +144,5 @@ var editCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(editCmd)
 	editCmd.Flags().StringVarP(&maxsurge, "maxsurge", "m", "", "percentage of the rooms to update at each step. Default is 25%.")
+	editCmd.Flags().StringVarP(&editor, "editor", "e", "", "specify which editor to use.")
 }
