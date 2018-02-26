@@ -29,7 +29,7 @@ func SaveAccessToken(
 	}
 
 	url := fmt.Sprintf("%s/access?code=%s", serverURL, code)
-	resp, status, err := client.Get(url)
+	resp, status, err := client.Get(url, "")
 	if err != nil {
 		return err
 	}

@@ -33,32 +33,34 @@ func NewClient(config *Config) *Client {
 }
 
 // Get does a get request
-func (c *Client) Get(url string) ([]byte, int, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, 0, err
-	}
-	c.addAuthHeader(req)
-	res, err := c.client.Do(req)
-	if err != nil {
-		return nil, 0, err
-	}
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, 0, err
-	}
-	return body, res.StatusCode, nil
+func (c *Client) Get(url, body string) ([]byte, int, error) {
+	return c.requestWithBody("GET", url, body)
+
+	// req, err := http.NewRequest("GET", url, nil)
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
+	// c.addAuthHeader(req)
+	// res, err := c.client.Do(req)
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
+	// defer res.Body.Close()
+	// body, err := ioutil.ReadAll(res.Body)
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
+	// return body, res.StatusCode, nil
 }
 
 // Put does a put request
-func (c *Client) Put(url string, body string) ([]byte, int, error) {
-	return c.putOrPost("PUT", url, body)
+func (c *Client) Put(url, body string) ([]byte, int, error) {
+	return c.requestWithBody("PUT", url, body)
 }
 
 // Post does a post request
-func (c *Client) Post(url string, body string) ([]byte, int, error) {
-	return c.putOrPost("POST", url, body)
+func (c *Client) Post(url, body string) ([]byte, int, error) {
+	return c.requestWithBody("POST", url, body)
 }
 
 // Delete does a put request
@@ -81,7 +83,7 @@ func (c *Client) Delete(url string) ([]byte, int, error) {
 	return responseBody, res.StatusCode, nil
 }
 
-func (c *Client) putOrPost(method, url string, body string) ([]byte, int, error) {
+func (c *Client) requestWithBody(method, url, body string) ([]byte, int, error) {
 	ioBody := strings.NewReader(body)
 
 	req, err := http.NewRequest(method, url, ioBody)

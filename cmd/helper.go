@@ -63,3 +63,11 @@ func printError(bodyResp []byte) {
 		fmt.Printf("%s: %v\n", key, value)
 	}
 }
+
+func buildBar(title string) string {
+	bar := ""
+	for i := 0; i < len(title); i++ {
+		bar = bar + "="
+	}
+	return bar
+}

@@ -46,7 +46,7 @@ var statusCmd = &cobra.Command{
 		client := getClient(config)
 		url := fmt.Sprintf("%s/scheduler/%s", config.ServerURL, schedulerName)
 
-		body, status, err := client.Get(url)
+		body, status, err := client.Get(url, "")
 		if err != nil {
 			log.WithError(err).Fatal("error on get request")
 		}

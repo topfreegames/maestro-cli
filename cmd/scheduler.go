@@ -45,7 +45,7 @@ var schedulerCmd = &cobra.Command{
 			schedulerName := args[0]
 			url = fmt.Sprintf("%s/scheduler/%s/config?version=%s",
 				config.ServerURL, schedulerName, version)
-			body, status, err := client.Get(url)
+			body, status, err := client.Get(url, "")
 			if err != nil {
 				log.WithError(err).Fatal("error on get request")
 			}
@@ -66,7 +66,7 @@ var schedulerCmd = &cobra.Command{
 		}
 
 		url = fmt.Sprintf("%s/scheduler", config.ServerURL)
-		body, status, err := client.Get(url)
+		body, status, err := client.Get(url, "")
 		if err != nil {
 			log.WithError(err).Fatal("error on get request")
 		}

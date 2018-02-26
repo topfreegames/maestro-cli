@@ -37,7 +37,7 @@ func NewLogin(serverURL string, openBrower func(string) error) *Login {
 
 func (l *Login) Perform(client interfaces.Client) error {
 	path := fmt.Sprintf("%s/login?state=%s", l.ServerURL, l.OAuthState)
-	body, status, err := client.Get(path)
+	body, status, err := client.Get(path, "")
 	if err != nil {
 		return err
 	}

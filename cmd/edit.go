@@ -42,7 +42,7 @@ var editCmd = &cobra.Command{
 		// Get config from server
 		schedulerName := args[0]
 		url := fmt.Sprintf("%s/scheduler/%s/config", config.ServerURL, schedulerName)
-		body, status, err := client.Get(url)
+		body, status, err := client.Get(url, "")
 		if err != nil {
 			log.WithError(err).Fatal("error on get request")
 		}

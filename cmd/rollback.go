@@ -35,6 +35,10 @@ var rollbackCmd = &cobra.Command{
 		client := getClient(config)
 		var url string
 
+		if len(args) < 2 {
+			log.Fatal("error: specify scheduler name and vesion to rollback to")
+			return
+		}
 		schedulerName := args[0]
 		version := args[1]
 

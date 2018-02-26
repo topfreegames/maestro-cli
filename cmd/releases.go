@@ -24,7 +24,7 @@ import (
 
 // releasesCmd represents the releases command
 var releasesCmd = &cobra.Command{
-	Use:   "releases",
+	Use:   "releases SCHEDULER_NAME",
 	Short: "list the releases of a scheduler",
 	Long:  `list the releases of a scheduler`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -36,9 +36,14 @@ var releasesCmd = &cobra.Command{
 		client := getClient(config)
 		var url string
 
+		if len(args) == 0 {
+			log.Fatal("error: specify scheduler name")
+			return
+		}
 		schedulerName := args[0]
+
 		url = fmt.Sprintf("%s/scheduler/%s/releases", config.ServerURL, schedulerName)
-		body, status, err := client.Get(url)
+		body, status, err := client.Get(url, "")
 		if err != nil {
 			log.WithError(err).Fatal("error on get request")
 		}
@@ -54,14 +59,14 @@ var releasesCmd = &cobra.Command{
 			log.WithError(err).Fatal("error on get request")
 		}
 
+		if obj["releases"] == nil {
+			log.Fatal("scheduler not found")
+		}
+
 		releases := obj["releases"].([]interface{})
 
 		title := fmt.Sprintf("%s releases", schedulerName)
-		l := len(title)
-		bar := ""
-		for i := 0; i < l; i++ {
-			bar = bar + "="
-		}
+		bar := buildBar(title)
 
 		fmt.Printf("%s\n%s\n", title, bar)
 		for _, release := range releases {
