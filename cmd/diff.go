@@ -53,7 +53,7 @@ If only VERSION_1 is specified, VERSION_2 defaults to the one before that.`,
 
 		schedulerName := args[0]
 		url := fmt.Sprintf("%s/scheduler/%s/diff", config.ServerURL, schedulerName)
-		reqBody := fmt.Sprintf(`{"version1": "%s", "version2": "%s"}`, version2, version1)
+		reqBody := fmt.Sprintf(`{"version1": "%s", "version2": "%s"}`, version1, version2)
 		body, status, err := client.Get(url, reqBody)
 		if err != nil {
 			log.WithError(err).Fatal("error on get request")
