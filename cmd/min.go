@@ -59,7 +59,7 @@ var minCmd = &cobra.Command{
 		client := getClient(config)
 
 		fmt.Println("Updating scheduler image, this may take a few minutes...")
-		url := fmt.Sprintf("%s/scheduler/%s/min", config.ServerURL, schedulerName)
+		url := fmt.Sprintf("%s/scheduler/%s/min?async=true", config.ServerURL, schedulerName)
 		reqBody := map[string]interface{}{"min": schedulerMin}
 		reqBts, _ := json.Marshal(reqBody)
 		body, status, err := client.Put(url, string(reqBts))
@@ -71,7 +71,11 @@ var minCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Printf("Successfully updated scheduler '%s' to min '%d'\n", schedulerName, schedulerMin)
+		var response map[string]interface{}
+		json.Unmarshal(body, &response)
+
+		fmt.Printf("Updating scheduler '%s' to min '%d'\n", schedulerName, schedulerMin)
+		fmt.Println("operationKey:", response["operationKey"])
 	},
 }
 

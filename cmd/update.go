@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -71,7 +72,7 @@ var updateCmd = &cobra.Command{
 				log.WithError(err).Fatal("error reading scheduler config")
 			}
 			schedulerName := yamlFile["name"].(string)
-			url := fmt.Sprintf("%s/scheduler/%s?maxsurge=%s", config.ServerURL, schedulerName, maxsurge)
+			url := fmt.Sprintf("%s/scheduler/%s?async=true&maxsurge=%s", config.ServerURL, schedulerName, maxsurge)
 			body, status, err := client.Put(url, string(bts))
 			if err != nil {
 				log.WithError(err).Fatal("error on put request")
@@ -81,8 +82,11 @@ var updateCmd = &cobra.Command{
 				return
 			}
 
-			fmt.Println("Successfully updated scheduler", schedulerName)
-			fmt.Println(string(bts))
+			var response map[string]interface{}
+			json.Unmarshal(body, &response)
+
+			fmt.Printf("Updating scheduler '%s'\n", schedulerName)
+			fmt.Println("operationKey:", response["operationKey"])
 		}
 	},
 }

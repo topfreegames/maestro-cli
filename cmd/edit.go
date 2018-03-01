@@ -1,4 +1,4 @@
-// Copyright © 2018 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2018 TFGCo backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ var editCmd = &cobra.Command{
 		fmt.Println("Updating scheduler. This can take a while...")
 
 		// Update scheduler
-		url = fmt.Sprintf("%s/scheduler/%s?maxsurge=%s", config.ServerURL, schedulerName, maxsurge)
+		url = fmt.Sprintf("%s/scheduler/%s?async=true&maxsurge=%s", config.ServerURL, schedulerName, maxsurge)
 		body, status, err = client.Put(url, updatedYamlString)
 		if err != nil {
 			log.WithError(err).Fatal("error on put request")
@@ -134,8 +134,12 @@ var editCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("Successfully updated scheduler", schedulerName)
+		var response map[string]interface{}
+		json.Unmarshal(body, &response)
+
 		fmt.Println(updatedYamlString)
+		fmt.Printf("Updating scheduler '%s'\n", schedulerName)
+		fmt.Println("operationKey:", response["operationKey"])
 
 		return
 	},
