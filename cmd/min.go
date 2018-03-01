@@ -58,7 +58,6 @@ var minCmd = &cobra.Command{
 		}
 		client := getClient(config)
 
-		fmt.Println("Updating scheduler image, this may take a few minutes...")
 		url := fmt.Sprintf("%s/scheduler/%s/min?async=true", config.ServerURL, schedulerName)
 		reqBody := map[string]interface{}{"min": schedulerMin}
 		reqBts, _ := json.Marshal(reqBody)
