@@ -15,11 +15,15 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/topfreegames/maestro-cli/extensions"
 )
 
 // progressCmd represents the progress command
@@ -42,27 +46,54 @@ var progressCmd = &cobra.Command{
 
 		// Get config from server
 		operationKey := args[0]
-		splitted := strings.Split(operationKey, ":")
-		if len(splitted) < 2 {
-			log.Fatal("error: invalid operation key")
-			return
-		}
 
-		schedulerName := splitted[1]
-
-		url := fmt.Sprintf("%s/scheduler/%s/operations/%s/status", config.ServerURL, schedulerName, operationKey)
-		body, status, err := client.Get(url, "")
-		if err != nil {
-			log.WithError(err).Fatal("error on get request")
-		}
-
-		if status != http.StatusOK {
-			printError(body)
-			return
-		}
-
-		fmt.Println(string(body))
+		waitProgress(client, config, log, operationKey)
 	},
+}
+
+func waitProgress(client *extensions.Client, config *extensions.Config, log *logrus.Logger, operationKey string) bool {
+	splitted := strings.Split(operationKey, ":")
+	if len(splitted) < 2 {
+		log.Fatal("error: invalid operation key")
+		return false
+	}
+
+	schedulerName := splitted[1]
+
+	bars := []string{"|", "/", "-", "\\"}
+	i := 0
+
+	ticker := time.NewTicker(2 * time.Second)
+	for {
+		select {
+		case <-ticker.C:
+			url := fmt.Sprintf("%s/scheduler/%s/operations/%s/status", config.ServerURL, schedulerName, operationKey)
+			body, status, err := client.Get(url, "")
+			if err != nil {
+				log.WithError(err).Fatal("error on get request")
+			}
+
+			if status != http.StatusOK {
+				fmt.Println("")
+				fmt.Println(string(body))
+				return false
+			}
+
+			var response map[string]interface{}
+			json.Unmarshal(body, &response)
+
+			if _, ok := response["success"]; ok {
+				fmt.Println("")
+				fmt.Println(string(body))
+				return true
+			}
+
+			fmt.Printf("\r[%s] %s %s", bars[i], response["operation"], response["progress"])
+			i = (i + 1) % len(bars)
+		}
+	}
+
+	return true
 }
 
 func init() {

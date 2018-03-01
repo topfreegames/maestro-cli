@@ -38,3 +38,10 @@ maestro rollback scheduler-name v1
 ```
 maestro edit scheduler-name
 ```
+* The commands update, edit and set return an operationKey. Use this operationKey to get its progress or cancel it.
+```
+maestro progress operation-key
+```
+```
+maestro cancel operation-key
+```

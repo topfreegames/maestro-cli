@@ -71,6 +71,8 @@ var imageCmd = &cobra.Command{
 
 		fmt.Printf("Updating scheduler '%s' to image '%s'\n", schedulerName, imageName)
 		fmt.Println("operationKey:", response["operationKey"])
+
+		waitProgress(client, config, log, response["operationKey"].(string))
 	},
 }
 

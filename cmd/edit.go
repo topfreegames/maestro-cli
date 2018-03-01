@@ -137,11 +137,12 @@ var editCmd = &cobra.Command{
 		var response map[string]interface{}
 		json.Unmarshal(body, &response)
 
-		fmt.Println(updatedYamlString)
 		fmt.Printf("Updating scheduler '%s'\n", schedulerName)
 		fmt.Println("operationKey:", response["operationKey"])
-
-		return
+		success := waitProgress(client, config, log, response["operationKey"].(string))
+		if success {
+			fmt.Println(updatedYamlString)
+		}
 	},
 }
 

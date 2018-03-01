@@ -76,6 +76,8 @@ var minCmd = &cobra.Command{
 
 		fmt.Printf("Updating scheduler '%s' to min '%d'\n", schedulerName, schedulerMin)
 		fmt.Println("operationKey:", response["operationKey"])
+
+		waitProgress(client, config, log, response["operationKey"].(string))
 	},
 }
 

@@ -87,6 +87,10 @@ var updateCmd = &cobra.Command{
 
 			fmt.Printf("Updating scheduler '%s'\n", schedulerName)
 			fmt.Println("operationKey:", response["operationKey"])
+			success := waitProgress(client, config, log, response["operationKey"].(string))
+			if success {
+				fmt.Println(string(file))
+			}
 		}
 	},
 }
