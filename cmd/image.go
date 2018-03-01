@@ -53,7 +53,6 @@ var imageCmd = &cobra.Command{
 		}
 		client := getClient(config)
 
-		fmt.Println("Updating scheduler image, this may take a few minutes...")
 		url := fmt.Sprintf("%s/scheduler/%s/image?async=true&maxsurge=%s", config.ServerURL, schedulerName, maxsurge)
 		reqBody := map[string]interface{}{"image": imageName, "container": container}
 		reqBts, _ := json.Marshal(reqBody)
@@ -69,8 +68,8 @@ var imageCmd = &cobra.Command{
 		var response map[string]interface{}
 		json.Unmarshal(body, &response)
 
-		fmt.Printf("Updating scheduler '%s' to image '%s'\n", schedulerName, imageName)
-		fmt.Println("operationKey:", response["operationKey"])
+		fmt.Printf("Updating scheduler '%s' to image '%s'. This can take a few minutes...\n", schedulerName, imageName)
+		fmt.Printf("\nOperationKey\n===========\n%s\n", response["operationKey"])
 
 		waitProgress(client, config, log, response["operationKey"].(string))
 	},

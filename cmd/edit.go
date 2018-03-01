@@ -121,7 +121,7 @@ var editCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println("Updating scheduler. This can take a while...")
+		fmt.Printf("Updating scheduler %s. This can take a while...\n", schedulerName)
 
 		// Update scheduler
 		url = fmt.Sprintf("%s/scheduler/%s?async=true&maxsurge=%s", config.ServerURL, schedulerName, maxsurge)
@@ -137,10 +137,10 @@ var editCmd = &cobra.Command{
 		var response map[string]interface{}
 		json.Unmarshal(body, &response)
 
-		fmt.Printf("Updating scheduler '%s'\n", schedulerName)
-		fmt.Println("operationKey:", response["operationKey"])
+		fmt.Printf("\nOperationKey\n===========\n%s\n", response["operationKey"])
 		success := waitProgress(client, config, log, response["operationKey"].(string))
 		if success {
+			fmt.Printf("New scheduler config\n===================\n")
 			fmt.Println(updatedYamlString)
 		}
 	},

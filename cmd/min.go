@@ -74,8 +74,8 @@ var minCmd = &cobra.Command{
 		var response map[string]interface{}
 		json.Unmarshal(body, &response)
 
-		fmt.Printf("Updating scheduler '%s' to min '%d'\n", schedulerName, schedulerMin)
-		fmt.Println("operationKey:", response["operationKey"])
+		fmt.Printf("Updating scheduler '%s' to min '%d'. This can take a few minutes...\n", schedulerName, schedulerMin)
+		fmt.Printf("\nOperationKey\n===========\n%s\n", response["operationKey"])
 
 		waitProgress(client, config, log, response["operationKey"].(string))
 	},

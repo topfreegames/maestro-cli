@@ -71,3 +71,12 @@ func buildBar(title string) string {
 	}
 	return bar
 }
+
+func printJSON(body []byte) {
+	var m map[string]interface{}
+	json.Unmarshal(body, &m)
+	for key, value := range m {
+		fmt.Printf("%s: %s\n", key, value)
+	}
+	fmt.Printf("\n")
+}

@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -42,7 +43,7 @@ var rollbackCmd = &cobra.Command{
 		schedulerName := args[0]
 		version := args[1]
 
-		url = fmt.Sprintf("%s/scheduler/%s/rollback", config.ServerURL, schedulerName)
+		url = fmt.Sprintf("%s/scheduler/%s/rollback?async=true", config.ServerURL, schedulerName)
 		reqBody := fmt.Sprintf(`{"version": "%s"}`, version)
 		body, status, err := client.Put(url, reqBody)
 		if err != nil {
@@ -54,7 +55,12 @@ var rollbackCmd = &cobra.Command{
 			return
 		}
 
-		fmt.Println(string(body))
+		var response map[string]interface{}
+		json.Unmarshal(body, &response)
+
+		fmt.Printf("Rolling back scheduler '%s'\n", schedulerName)
+		fmt.Printf("\nOperationKey\n===========\n%s\n", response["operationKey"])
+		waitProgress(client, config, log, response["operationKey"].(string))
 	},
 }
 

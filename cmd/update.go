@@ -58,8 +58,6 @@ var updateCmd = &cobra.Command{
 		}
 		client := getClient(config)
 
-		fmt.Println("Updating scheduler, this may take a few minutes...")
-
 		listBytes := bytes.Split(file, []byte("---"))
 		for _, bts := range listBytes {
 			if strings.TrimSpace(string(bts)) == "" {
@@ -85,10 +83,11 @@ var updateCmd = &cobra.Command{
 			var response map[string]interface{}
 			json.Unmarshal(body, &response)
 
-			fmt.Printf("Updating scheduler '%s'\n", schedulerName)
-			fmt.Println("operationKey:", response["operationKey"])
+			fmt.Printf("Updating scheduler '%s', this may take a few minutes...\n", schedulerName)
+			fmt.Printf("\nOperationKey\n===========\n%s\n", response["operationKey"])
 			success := waitProgress(client, config, log, response["operationKey"].(string))
 			if success {
+				fmt.Printf("New scheduler config\n===================\n")
 				fmt.Println(string(file))
 			}
 		}

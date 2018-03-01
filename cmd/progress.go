@@ -70,11 +70,12 @@ func waitProgress(client *extensions.Client, config *extensions.Config, log *log
 			url := fmt.Sprintf("%s/scheduler/%s/operations/%s/status", config.ServerURL, schedulerName, operationKey)
 			body, status, err := client.Get(url, "")
 			if err != nil {
+				fmt.Printf("\n")
 				log.WithError(err).Fatal("error on get request")
 			}
 
 			if status != http.StatusOK {
-				fmt.Println("")
+				fmt.Printf("\n")
 				fmt.Println(string(body))
 				return false
 			}
@@ -83,8 +84,8 @@ func waitProgress(client *extensions.Client, config *extensions.Config, log *log
 			json.Unmarshal(body, &response)
 
 			if _, ok := response["success"]; ok {
-				fmt.Println("")
-				fmt.Println(string(body))
+				fmt.Printf("\nResults\n=======\n")
+				printJSON(body)
 				return true
 			}
 
