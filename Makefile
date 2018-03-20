@@ -5,6 +5,8 @@
 # http://www.opensource.org/licenses/mit-license
 # Copyright © 2017 Top Free Games <backend@tfgco.com>
 
+.PHONY: mocks
+
 TEST_PACKAGES=`find . -type f -name "*.go" ! \( -path "*vendor*" \) | sed -En "s/([^\.])\/.*/\1/p" | uniq`
 BIN_PATH = "./bin"
 BIN_NAME = "maestro"
@@ -51,3 +53,9 @@ build-all-platforms:
 	@env GOOS=darwin GOARCH=amd64 go build -o ${BIN_PATH}/${BIN_NAME}-darwin-x86_64
 	@echo "Building for win-x86_64..."
 	@env GOOS=windows GOARCH=amd64 go build -o ${BIN_PATH}/${BIN_NAME}-win-x86_64
+
+mocks:
+	@echo 'making mocks from ./interfaces'
+	mockgen -source=interfaces/client.go -destination=mocks/client.go -package=mocks
+	mockgen -source=interfaces/filesystem.go -destination=mocks/filesystem.go -package=mocks
+	@echo 'done, mocks on ./mocks'
