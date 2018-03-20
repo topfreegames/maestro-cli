@@ -136,6 +136,10 @@ var editCmd = &cobra.Command{
 
 		var response map[string]interface{}
 		json.Unmarshal(body, &response)
+		if reason, ok := success(response); !ok {
+			fmt.Printf("Operation failed. Try again later.\nReason: %s\n", reason)
+			return
+		}
 
 		fmt.Printf("\nOperationKey\n===========\n%s\n", response["operationKey"])
 		success := waitProgress(client, config, log, response["operationKey"].(string))

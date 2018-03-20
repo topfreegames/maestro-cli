@@ -26,3 +26,15 @@ func getClient(config *extensions.Config) *extensions.Client {
 	client := extensions.NewClient(config)
 	return client
 }
+
+func success(response map[string]interface{}) (string, bool) {
+	if response["success"] == false {
+		if reason, ok := response["reason"].(string); ok {
+			return reason, false
+		}
+
+		return "failed", false
+	}
+
+	return "", true
+}

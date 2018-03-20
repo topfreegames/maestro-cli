@@ -89,7 +89,14 @@ func waitProgress(client *extensions.Client, config *extensions.Config, log *log
 				return true
 			}
 
-			fmt.Printf("\r[%s] %s %s", bars[i], response["operation"], response["progress"])
+			description, hasDescription := response["description"]
+			strDescription, isString := description.(string)
+			if hasDescription && isString && strings.Contains(strDescription, "lock") {
+				fmt.Printf("\r[%s] %s", bars[i], strDescription)
+			} else {
+				fmt.Printf("\r[%s] %s %s", bars[i], response["operation"], response["progress"])
+			}
+
 			i = (i + 1) % len(bars)
 		}
 	}
