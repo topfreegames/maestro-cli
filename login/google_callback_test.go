@@ -36,6 +36,7 @@ var _ = Describe("GoogleCallback", func() {
 		configPath    string
 		url           string
 		context       = "test"
+		body          = ""
 	)
 
 	BeforeEach(func() {
@@ -52,7 +53,7 @@ var _ = Describe("GoogleCallback", func() {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		client.EXPECT().Get(url).
+		client.EXPECT().Get(url, body).
 			Return(resp, http.StatusOK, nil)
 		filesystem.EXPECT().
 			MkdirAll(configDir, os.ModePerm).
@@ -87,7 +88,7 @@ var _ = Describe("GoogleCallback", func() {
 	})
 
 	It("should return error if get request fails", func() {
-		client.EXPECT().Get(url).
+		client.EXPECT().Get(url, body).
 			Return(nil, 0, errors.New("request error"))
 
 		err := SaveAccessToken(
@@ -101,7 +102,7 @@ var _ = Describe("GoogleCallback", func() {
 	})
 
 	It("should return error if get request not returns status code 200", func() {
-		client.EXPECT().Get(url).
+		client.EXPECT().Get(url, body).
 			Return([]byte("bad request"), http.StatusBadRequest, nil)
 
 		err := SaveAccessToken(

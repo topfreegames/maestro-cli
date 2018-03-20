@@ -28,16 +28,16 @@ func (_m *MockClient) EXPECT() *_MockClientRecorder {
 	return _m.recorder
 }
 
-func (_m *MockClient) Get(url string) ([]byte, int, error) {
-	ret := _m.ctrl.Call(_m, "Get", url)
+func (_m *MockClient) Get(url string, body string) ([]byte, int, error) {
+	ret := _m.ctrl.Call(_m, "Get", url, body)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(int)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
 
-func (_mr *_MockClientRecorder) Get(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Get", arg0)
+func (_mr *_MockClientRecorder) Get(arg0, arg1 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Get", arg0, arg1)
 }
 
 func (_m *MockClient) Put(url string, body string) ([]byte, int, error) {

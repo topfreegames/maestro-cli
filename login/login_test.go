@@ -25,6 +25,7 @@ var _ = Describe("Login", func() {
 		login     *Login
 		serverURL = "server.com"
 		path      string
+		body      = ""
 	)
 
 	BeforeEach(func() {
@@ -40,14 +41,14 @@ var _ = Describe("Login", func() {
 		})
 		Expect(err).NotTo(HaveOccurred())
 
-		client.EXPECT().Get(path).Return(resp, http.StatusOK, nil)
+		client.EXPECT().Get(path, body).Return(resp, http.StatusOK, nil)
 
 		err = login.Perform(client)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
 	It("should return error if get request fails", func() {
-		client.EXPECT().Get(path).Return(nil, 0, errors.New("request error"))
+		client.EXPECT().Get(path, body).Return(nil, 0, errors.New("request error"))
 
 		err := login.Perform(client)
 		Expect(err).To(HaveOccurred())
@@ -55,7 +56,7 @@ var _ = Describe("Login", func() {
 	})
 
 	It("should return error is status code is not 200", func() {
-		client.EXPECT().Get(path).Return(nil, http.StatusBadRequest, nil)
+		client.EXPECT().Get(path, body).Return(nil, http.StatusBadRequest, nil)
 
 		err := login.Perform(client)
 		Expect(err).To(HaveOccurred())
@@ -73,7 +74,7 @@ var _ = Describe("Login", func() {
 		})
 		path = fmt.Sprintf("%s/login?state=%s", serverURL, login.OAuthState)
 
-		client.EXPECT().Get(path).Return(resp, http.StatusOK, nil)
+		client.EXPECT().Get(path, body).Return(resp, http.StatusOK, nil)
 
 		err = login.Perform(client)
 		Expect(err).To(HaveOccurred())
