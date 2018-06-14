@@ -27,6 +27,7 @@ type schedulerListResponse struct {
 }
 
 var version string
+var requestJson bool
 
 // schedulerCmd represents the scheduler command
 var schedulerCmd = &cobra.Command{
@@ -45,7 +46,11 @@ var schedulerCmd = &cobra.Command{
 			schedulerName := args[0]
 			url = fmt.Sprintf("%s/scheduler/%s/config?version=%s",
 				config.ServerURL, schedulerName, version)
-			body, status, err := client.Get(url, "")
+			headers := make(map[string]string)
+			if requestJson {
+				headers["Accept"] = "application/json"
+			}
+			body, status, err := client.Get(url, "", headers)
 			if err != nil {
 				log.WithError(err).Fatal("error on get request")
 			}
@@ -61,7 +66,12 @@ var schedulerCmd = &cobra.Command{
 				log.WithError(err).Fatal("error on get request")
 			}
 
-			fmt.Println(obj["yaml"])
+			if requestJson {
+				jsonText, _ := jsonLib.MarshalIndent(obj, "", "  ")
+				fmt.Println(string(jsonText))
+			} else {
+				fmt.Println(obj["yaml"])
+			}
 			return
 		}
 
@@ -91,4 +101,5 @@ var schedulerCmd = &cobra.Command{
 func init() {
 	getCmd.AddCommand(schedulerCmd)
 	schedulerCmd.Flags().StringVar(&version, "version", "", "scheduler release version")
+	schedulerCmd.Flags().BoolVar(&requestJson, "json", false, "request scheduler in json")
 }
