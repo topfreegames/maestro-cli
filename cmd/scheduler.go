@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ var version string
 // schedulerCmd represents the scheduler command
 var schedulerCmd = &cobra.Command{
 	Use:   "scheduler",
-	Short: "list schedulers or get a specific one",
-	Long:  `list schedulers or get a specific one`,
+	Short: "List schedulers or get a specific one",
+	Long:  `List schedulers or get a specific one`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("get scheduler")
 		config, err := getConfig()

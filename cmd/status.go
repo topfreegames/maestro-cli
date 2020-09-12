@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,24 +16,26 @@ package cmd
 
 import (
 	jsonLib "encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/spf13/cobra"
 )
 
 // statusCmd represents the status command
 var statusCmd = &cobra.Command{
-	Use:   "status",
+	Use:   "status SCHEDULER_NAME",
 	Short: "Scheduler status",
 	Long:  `Returns scheduler status like state, how many rooms are running and last time it scaled.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			fmt.Println("Error: inform scheduler name")
-			os.Exit(1)
+			return errors.New("inform scheduler name")
 		}
 
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("status")
 
 		schedulerName := args[0]

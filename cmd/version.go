@@ -1,4 +1,4 @@
-// Copyright © 2017 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/topfreegames/maestro-cli/metadata"
 
 	"github.com/spf13/cobra"
@@ -24,8 +25,8 @@ import (
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "Maestro-cli version",
-	Long:  `Maestro-cli version`,
+	Short: "Shows maestro-cli version",
+	Long:  `Shows maestro-cli version`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Maestro-cli version:", metadata.Version)
 	},

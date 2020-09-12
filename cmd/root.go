@@ -3,7 +3,7 @@
 //
 // Licensed under the MIT license:
 // http://www.opensource.org/licenses/mit-license
-// Copyright © 2017 Top Free Games <backend@tfgco.com>
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 
 package cmd
 
