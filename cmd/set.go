@@ -22,7 +22,7 @@ import (
 var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set scheduler fields",
-	Long:  `set scheduler fields like image and minimum without updating the whole scheduler`,
+	Long:  `Set scheduler fields like image and minimum without updating the whole scheduler`,
 }
 
 func init() {

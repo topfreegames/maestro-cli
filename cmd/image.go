@@ -30,8 +30,8 @@ var container string
 // imageCmd represents the image command
 var imageCmd = &cobra.Command{
 	Use:   "image SCHEDULER_NAME",
-	Short: "sets a new image",
-	Long: `updates scheduler with new image, changing only the scheduler's image field. If the image is the same,
+	Short: "Sets a new image",
+	Long: `Updates scheduler with new image, changing only the scheduler's image field. If the image is the same,
 	nothing is done. The rooms receive a gracefully shutdown and new ones are created.`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {

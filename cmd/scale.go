@@ -29,8 +29,8 @@ var replicas int
 // scaleCmd represents the scale command
 var scaleCmd = &cobra.Command{
 	Use:   "scale SCHEDULER_NAME",
-	Short: "sets the number of replicas",
-	Long:  `scales the scheduler up or down to match the number of replicas specified.`,
+	Short: "Sets the number of replicas",
+	Long:  `Scales the scheduler up or down to match the number of replicas specified.`,
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
 			return errors.New("inform scheduler name")
