@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,24 +22,21 @@ import (
 	"github.com/Sirupsen/logrus"
 )
 
-func newLog(cmdName string) *logrus.Logger {
-	ll := logrus.InfoLevel
-	switch Verbose {
-	case 0:
-		ll = logrus.ErrorLevel
-		break
-	case 1:
-		ll = logrus.WarnLevel
-		break
-	case 3:
-		ll = logrus.DebugLevel
-		break
-	default:
-		ll = logrus.InfoLevel
+func getLogLevel() logrus.Level {
+	if Verbose == 0 {
+		return logrus.ErrorLevel
+	} else if Verbose == 1 {
+		return logrus.WarnLevel
+	} else if Verbose == 3 {
+		return logrus.DebugLevel
 	}
 
+	return logrus.InfoLevel
+}
+
+func newLog(cmdName string) *logrus.Logger {
 	log := logrus.New()
-	log.Level = ll
+	log.Level = getLogLevel()
 
 	return log
 }

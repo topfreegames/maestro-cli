@@ -27,7 +27,7 @@ var amount uint
 
 // scaleupCmd represents the scaleup command
 var scaleupCmd = &cobra.Command{
-	Use:   "scaleup",
+	Use:   "scaleup [scheduler name]",
 	Short: "Scales up rooms at a specific scheduler",
 	Long:  `Scales up rooms at a specific scheduler`,
 	Run: func(cmd *cobra.Command, args []string) {

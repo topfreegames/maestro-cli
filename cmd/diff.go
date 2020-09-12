@@ -1,4 +1,4 @@
-// Copyright © 2018 TFGco backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -25,10 +26,17 @@ import (
 // diffCmd represents the diff command
 var diffCmd = &cobra.Command{
 	Use:   "diff SCHEDULER_NAME [VERSION_1] [VERSION_2]",
-	Short: "diff between configs of a scheduler",
+	Short: "Diff between configs of a scheduler",
 	Long: `returns the diff between two versions of a scheduler. 
 If no VERSION_1 is specified, VERSION_1 defaults to current version and VERSION_2 to the one before that.
 If only VERSION_1 is specified, VERSION_2 defaults to the one before that.`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return errors.New("inform scheduler name")
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("releases")
 		config, err := getConfig()
@@ -36,11 +44,6 @@ If only VERSION_1 is specified, VERSION_2 defaults to the one before that.`,
 			log.WithError(err).Fatal("error getting client config")
 		}
 		client := getClient(config)
-
-		if len(args) == 0 {
-			fmt.Println("error: specify scheduler name")
-			return
-		}
 
 		var version1, version2 string
 		if len(args) > 1 {

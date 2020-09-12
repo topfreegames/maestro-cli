@@ -1,4 +1,4 @@
-// Copyright © 2018 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -25,8 +26,15 @@ import (
 // rollbackCmd represents the rollback command
 var rollbackCmd = &cobra.Command{
 	Use:   "rollback SCHEDULER_NAME VERSION",
-	Short: "rollback to a previous version",
-	Long:  `rollback to a previous version`,
+	Short: "Rollback to a previous version",
+	Long:  `Rollback to a previous version`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) < 2 {
+			return errors.New("specify scheduler name and vesion to rollback to")
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("rollback")
 		config, err := getConfig()
@@ -36,10 +44,6 @@ var rollbackCmd = &cobra.Command{
 		client := getClient(config)
 		var url string
 
-		if len(args) < 2 {
-			log.Fatal("error: specify scheduler name and vesion to rollback to")
-			return
-		}
 		schedulerName := args[0]
 		version := args[1]
 

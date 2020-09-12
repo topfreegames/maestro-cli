@@ -1,4 +1,4 @@
-// Copyright © 2018 TFGCo backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -43,22 +44,26 @@ func getEditor() string {
 // editCmd represents the edit command
 var editCmd = &cobra.Command{
 	Use:   "edit SCHEDULER_NAME",
-	Short: "edit a scheduler",
+	Short: "Edit a scheduler",
 	Long: `edit opens default editor and updates the scheduler on save if scheduler is valid.
 	It chooses which editor to use by reading $EDITOR variable; if it's unset, maestro chooses vi as default.
 	To specify which editor to use, use the --editor flag.`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return errors.New("inform scheduler name")
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("get scheduler")
+
 		config, err := getConfig()
 		if err != nil {
 			log.WithError(err).Fatal("error getting client config")
 		}
-		client := getClient(config)
 
-		if len(args) == 0 {
-			log.Fatal("error: specify scheduler name")
-			return
-		}
+		client := getClient(config)
 
 		// Get config from server
 		schedulerName := args[0]

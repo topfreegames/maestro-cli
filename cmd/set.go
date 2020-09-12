@@ -21,7 +21,7 @@ import (
 // setCmd represents the set command
 var setCmd = &cobra.Command{
 	Use:   "set",
-	Short: "set scheduler fields",
+	Short: "Set scheduler fields",
 	Long:  `set scheduler fields like image and minimum without updating the whole scheduler`,
 }
 

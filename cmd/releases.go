@@ -1,4 +1,4 @@
-// Copyright © 2018 TFGCo backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -25,8 +26,15 @@ import (
 // releasesCmd represents the releases command
 var releasesCmd = &cobra.Command{
 	Use:   "releases SCHEDULER_NAME",
-	Short: "list the releases of a scheduler",
-	Long:  `list the releases of a scheduler`,
+	Short: "List the releases (versions) of a scheduler",
+	Long:  `List the releases (versions) of a scheduler`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return errors.New("inform scheduler name")
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("releases")
 		config, err := getConfig()
@@ -36,10 +44,6 @@ var releasesCmd = &cobra.Command{
 		client := getClient(config)
 		var url string
 
-		if len(args) == 0 {
-			log.Fatal("error: specify scheduler name")
-			return
-		}
 		schedulerName := args[0]
 
 		url = fmt.Sprintf("%s/scheduler/%s/releases", config.ServerURL, schedulerName)

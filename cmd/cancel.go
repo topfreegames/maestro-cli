@@ -1,4 +1,4 @@
-// Copyright © 2018 TFGCo backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -27,26 +28,31 @@ var cancelCmd = &cobra.Command{
 	Use:   "cancel OPERATION_KEY",
 	Short: "Cancel an operation",
 	Long:  `The operation will stop and rollback`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			return errors.New("specify an operation key")
+		}
+
+		operationKey := args[0]
+		splitted := strings.Split(operationKey, ":")
+		if len(splitted) < 2 {
+			return errors.New("invalid operation key, it should be three values concatenated with a colon (:)")
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("cancel")
 		config, err := getConfig()
 		if err != nil {
 			log.WithError(err).Fatal("error getting client config")
 		}
-		client := getClient(config)
 
-		if len(args) == 0 {
-			log.Fatal("error: specify scheduler name")
-			return
-		}
+		client := getClient(config)
 
 		// Get config from server
 		operationKey := args[0]
 		splitted := strings.Split(operationKey, ":")
-		if len(splitted) < 2 {
-			log.Fatal("error: invalid operation key")
-			return
-		}
 
 		schedulerName := splitted[1]
 
@@ -66,15 +72,4 @@ var cancelCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(cancelCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// cancelCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// cancelCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }

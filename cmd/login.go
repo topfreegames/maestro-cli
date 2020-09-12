@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
+	"errors"
+	"net/url"
 
 	"github.com/topfreegames/maestro-cli/api"
 	"github.com/topfreegames/maestro-cli/extensions"
@@ -27,15 +27,25 @@ import (
 
 // loginCmd represents the login command
 var loginCmd = &cobra.Command{
-	Use:   "login",
+	Use:   "login [maestro api url]",
 	Short: "Login using an authorized email domain",
 	Long: `Login and allow Maestro to authenticate commands using an authorized
 	email domain. Google Oauth2 is used as authentication.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			fmt.Println("Error: inform server url")
-			os.Exit(1)
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			return errors.New("inform server url")
 		}
+
+		maestroURL := args[0]
+		_, err := url.ParseRequestURI(maestroURL)
+
+		if err != nil {
+			return errors.New("inform server url in a valid format")
+		}
+
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("login")
 
 		url := args[0]

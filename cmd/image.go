@@ -1,4 +1,4 @@
-// Copyright © 2018 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -28,16 +29,18 @@ var container string
 
 // imageCmd represents the image command
 var imageCmd = &cobra.Command{
-	Use:   "image",
+	Use:   "image SCHEDULER_NAME",
 	Short: "sets a new image",
 	Long: `updates scheduler with new image, changing only the scheduler's image field. If the image is the same,
 	nothing is done. The rooms receive a gracefully shutdown and new ones are created.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			fmt.Println("Error: inform scheduler name")
-			os.Exit(1)
+			return errors.New("inform scheduler name")
 		}
 
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("setImage")
 
 		schedulerName := args[0]
