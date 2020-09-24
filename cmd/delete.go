@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,25 +15,27 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/spf13/cobra"
 )
 
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
-	Use:   "delete",
+	Use:   "delete [SCHEDULER_NAME...]",
 	Short: "Delete scheduler on Maestro",
 	Long: `Delete scheduler on Maestro. This will stop all rooms and remove
 	configs from databases.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			fmt.Println("Error: inform scheduler name")
-			os.Exit(1)
+			return errors.New("inform scheduler name")
 		}
 
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("delete")
 
 		config, err := getConfig()

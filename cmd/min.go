@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -27,23 +28,21 @@ var schedulerMin uint
 
 // minCmd represents the min command
 var minCmd = &cobra.Command{
-	Use:   "min",
-	Short: "sets scheduler's min",
+	Use:   "min SCHEDULER_NAME",
+	Short: "Sets scheduler's min field",
 	Long: `updates scheduler with new min, changing only the scheduler's min field. If the min is the same,
 	nothing is done.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			fmt.Println("Error: inform scheduler name")
-			os.Exit(1)
+			return errors.New("inform scheduler name")
 		}
 
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("setImage")
 
 		schedulerName := args[0]
-		if schedulerName == "" {
-			fmt.Println("Error: inform scheduler name")
-			os.Exit(1)
-		}
 
 		if schedulerMin < 0 {
 			fmt.Printf("Error: min must be greater or equal than zero. Informed min was %d", schedulerMin)

@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -25,15 +26,17 @@ import (
 
 // scaledownCmd represents the scaledown command
 var scaledownCmd = &cobra.Command{
-	Use:   "scaledown",
+	Use:   "scaledown SCHEDULER_NAME",
 	Short: "Scales down rooms at a specific scheduler",
 	Long:  `Scales down rooms at a specific scheduler`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			fmt.Println("Error: inform scheduler name")
-			os.Exit(1)
+			return errors.New("inform scheduler name")
 		}
 
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
 		schedulerName := args[0]
 
 		if amount == 0 {

@@ -1,4 +1,4 @@
-// Copyright © 2018 TFGCo backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -31,6 +32,13 @@ var progressCmd = &cobra.Command{
 	Use:   "progress OPERATION_KEY",
 	Short: "Returns if the operation of operationKey is enqueued or the progress of the operation",
 	Long:  `Returns if the operation of operationKey is enqueued or the progress of the operation`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return errors.New("inform operation key")
+		}
+
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("progress")
 		config, err := getConfig()
@@ -38,11 +46,6 @@ var progressCmd = &cobra.Command{
 			log.WithError(err).Fatal("error getting client config")
 		}
 		client := getClient(config)
-
-		if len(args) == 0 {
-			log.Fatal("error: specify scheduler name")
-			return
-		}
 
 		// Get config from server
 		operationKey := args[0]

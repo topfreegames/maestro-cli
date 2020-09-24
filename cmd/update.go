@@ -1,4 +1,4 @@
-// Copyright © 2017 TopFreeGames backend@tfgco.com
+// Copyright © 2020 Wildlife Studios backend@tfgco.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
@@ -32,16 +32,18 @@ var maxsurge string
 
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
-	Use:   "update",
+	Use:   "update SCHEDULER_CONFIG_FILE",
 	Short: "Update scheduler on Maestro",
 	Long: `Update scheduler on Maestro will update config on databases and, 
 	if necessary, delete and create pods and services following new configuration.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			fmt.Println("Error: inform scheduler config file path")
-			os.Exit(1)
+			return errors.New("inform scheduler config file path")
 		}
 
+		return nil
+	},
+	Run: func(cmd *cobra.Command, args []string) {
 		log := newLog("update")
 
 		filePath := args[0]
