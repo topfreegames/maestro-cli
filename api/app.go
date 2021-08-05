@@ -13,20 +13,18 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/topfreegames/maestro-cli/interfaces"
-	"github.com/topfreegames/maestro-cli/login"
 	"github.com/topfreegames/maestro-cli/metadata"
+	"go.uber.org/zap"
 )
 
 // App is the api application
 type App struct {
 	Address    string
-	Logger     logrus.FieldLogger
+	Logger     zap.Logger
 	Router     *mux.Router
 	Server     *http.Server
-	Login      *login.Login
 	FileSystem interfaces.FileSystem
 	Client     interfaces.Client
 	Listener   net.Listener
@@ -34,16 +32,14 @@ type App struct {
 }
 
 func NewApp(
-	login *login.Login,
 	fs interfaces.FileSystem,
 	client interfaces.Client,
-	logger logrus.FieldLogger,
+	logger zap.Logger,
 	context string,
 ) (*App, error) {
 	app := &App{
 		Address:    ":57460",
 		Logger:     logger,
-		Login:      login,
 		FileSystem: fs,
 		Client:     client,
 		Context:    context,
@@ -59,11 +55,11 @@ func (a *App) configureApp() error {
 }
 
 func (a *App) configureLogger() {
-	a.Logger = a.Logger.WithFields(logrus.Fields{
-		"source":    "maestro-cli",
-		"operation": "initializeApp",
-		"version":   metadata.Version,
-	})
+	a.Logger = *a.Logger.With(
+		zap.String("source",    "maestro-cli"),
+		zap.String("operation", "initializeApp"),
+		zap.String("version",   metadata.Version),
+	)
 }
 
 func (a *App) configureServer() {
@@ -88,7 +84,6 @@ func (a *App) ListenAndLoginAndServe() (io.Closer, error) {
 	}
 	a.Listener = listener
 
-	err = a.Login.Perform(a.Client)
 	if err != nil {
 		return nil, err
 	}

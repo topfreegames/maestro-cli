@@ -20,14 +20,12 @@ import (
 
 // Config struct
 type Config struct {
-	Token     string `yaml:"token"`
 	ServerURL string `yaml:"serverUrl"`
 }
 
 // NewConfig ctor
 func NewConfig(token, serverURL string) *Config {
 	c := &Config{
-		Token:     token,
 		ServerURL: serverURL,
 	}
 	return c

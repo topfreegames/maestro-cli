@@ -20,12 +20,13 @@ import (
 	"net/http"
 	"os"
 
+	"go.uber.org/zap"
 	"github.com/spf13/cobra"
 )
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
-	Use:   "create",
+	Use:   "create scheduler",
 	Short: "Creates new scheduler",
 	Long: `Creates a new scheduler on Maestro and, if worker is running, the 
 	rooms will be launghed.`,
@@ -35,32 +36,35 @@ var createCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		log := newLog("create")
-
 		filePath := args[0]
-		log.Debugf("reading %s", filePath)
+		zap.L().Sugar().Debugf("reading %s", filePath)
 
 		bts, err := ioutil.ReadFile(filePath)
 		if err != nil {
-			log.WithError(err).Fatal("error while reading file")
+			zap.L().With(zap.Error(err)).Fatal("error while reading file")
+			os.Exit(1)
 		}
 
 		config, err := getConfig()
 		if err != nil {
-			log.WithError(err).Fatal("error getting client config")
+			zap.L().With(zap.Error(err)).Fatal("error getting client config")
+			os.Exit(1)
 		}
 		client := getClient(config)
 
-		fmt.Println("Creating scheduler, this may take a few minutes...")
+		fmt.Println("Creating scheduler...")
 
 		url := fmt.Sprintf("%s/scheduler", config.ServerURL)
 		body, status, err := client.Post(url, string(bts))
 		if err != nil {
-			log.WithError(err).Fatal("error on post request")
+			zap.L().With(zap.Error(err)).Fatal("error on post request")
+			os.Exit(1)
 		}
 		if status != http.StatusCreated {
-			printError(body)
-			return
+			zap.L().Error("create scheduler response not ok", 
+				zap.String("status", http.StatusText(status)),
+				zap.String("body", string(body)))
+			os.Exit(1)
 		}
 
 		fmt.Println("Successfully created scheduler")
