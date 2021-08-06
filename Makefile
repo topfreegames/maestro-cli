@@ -25,7 +25,7 @@ unit: clear-coverage-profiles unit-run gather-unit-profiles
 
 merge-profiles:
 	@mkdir -p _build
-	@gocovmerge _build/*.out > _build/coverage-all.out
+	@go run github.com/wadey/gocovmerge _build/*.out > _build/coverage-all.out
 
 test-coverage-func coverage-func: merge-profiles
 	@echo
@@ -38,7 +38,7 @@ clear-coverage-profiles:
 	@find . -name '*.coverprofile' -delete
 
 unit-run:
-	@ginkgo -tags unit -cover -r -randomizeAllSpecs -randomizeSuites -skipMeasurements ${TEST_PACKAGES}
+	@go run github.com/onsi/ginkgo/ginkgo -tags unit -cover -r -randomizeAllSpecs -randomizeSuites -skipMeasurements ${TEST_PACKAGES}
 
 gather-unit-profiles:
 	@mkdir -p _build
