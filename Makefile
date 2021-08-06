@@ -11,6 +11,10 @@ TEST_PACKAGES=`find . -type f -name "*.go" ! \( -path "*vendor*" \) | sed -En "s
 BIN_PATH = "./bin"
 BIN_NAME = "maestro"
 
+SOURCES := $(shell \
+	find . -not \( \( -name .git -o -name .go -o -name vendor \) -prune \) \
+	-name '*.go')
+
 build:
 	@mkdir -p bin
 	@go build -o ./bin/maestro main.go
@@ -47,8 +51,6 @@ build-all-platforms:
 	@env GOOS=linux GOARCH=386 go build -o ${BIN_PATH}/${BIN_NAME}-linux-i386
 	@echo "Building for linux-x86_64..."
 	@env GOOS=linux GOARCH=amd64 go build -o ${BIN_PATH}/${BIN_NAME}-linux-x86_64
-	@echo "Building for darwin-i386..."
-	@env GOOS=darwin GOARCH=386 go build -o ${BIN_PATH}/${BIN_NAME}-darwin-i386
 	@echo "Building for darwin-x86_64..."
 	@env GOOS=darwin GOARCH=amd64 go build -o ${BIN_PATH}/${BIN_NAME}-darwin-x86_64
 	@echo "Building for win-x86_64..."
@@ -59,3 +61,6 @@ mocks:
 	mockgen -source=interfaces/client.go -destination=mocks/client.go -package=mocks
 	mockgen -source=interfaces/filesystem.go -destination=mocks/filesystem.go -package=mocks
 	@echo 'done, mocks on ./mocks'
+
+goimports:
+	@go run golang.org/x/tools/cmd/goimports -w $(SOURCES)

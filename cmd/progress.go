@@ -65,43 +65,40 @@ func waitProgress(client *extensions.Client, config *extensions.Config, log *log
 
 	ticker := time.NewTicker(2 * time.Second)
 	for {
-		select {
-		case <-ticker.C:
-			url := fmt.Sprintf("%s/scheduler/%s/operations/%s/status", config.ServerURL, schedulerName, operationKey)
-			body, status, err := client.Get(url, "")
-			if err != nil {
-				fmt.Printf("\n")
-				log.WithError(err).Fatal("error on get request")
-			}
 
-			if status != http.StatusOK {
-				fmt.Printf("\n")
-				fmt.Println(string(body))
-				return false
-			}
-
-			var response map[string]interface{}
-			json.Unmarshal(body, &response)
-
-			if _, ok := response["success"]; ok {
-				fmt.Printf("\nResults\n=======\n")
-				printJSON(body)
-				return true
-			}
-
-			description, hasDescription := response["description"]
-			strDescription, isString := description.(string)
-			if hasDescription && isString && strings.Contains(strDescription, "lock") {
-				fmt.Printf("\r[%s] %s", bars[i], strDescription)
-			} else {
-				fmt.Printf("\r[%s] %s %s", bars[i], response["operation"], response["progress"])
-			}
-
-			i = (i + 1) % len(bars)
+		<-ticker.C
+		url := fmt.Sprintf("%s/scheduler/%s/operations/%s/status", config.ServerURL, schedulerName, operationKey)
+		body, status, err := client.Get(url, "")
+		if err != nil {
+			fmt.Printf("\n")
+			log.WithError(err).Fatal("error on get request")
 		}
-	}
 
-	return true
+		if status != http.StatusOK {
+			fmt.Printf("\n")
+			fmt.Println(string(body))
+			return false
+		}
+
+		var response map[string]interface{}
+		json.Unmarshal(body, &response)
+
+		if _, ok := response["success"]; ok {
+			fmt.Printf("\nResults\n=======\n")
+			printJSON(body)
+			return true
+		}
+
+		description, hasDescription := response["description"]
+		strDescription, isString := description.(string)
+		if hasDescription && isString && strings.Contains(strDescription, "lock") {
+			fmt.Printf("\r[%s] %s", bars[i], strDescription)
+		} else {
+			fmt.Printf("\r[%s] %s %s", bars[i], response["operation"], response["progress"])
+		}
+
+		i = (i + 1) % len(bars)
+	}
 }
 
 func init() {

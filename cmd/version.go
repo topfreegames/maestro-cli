@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/topfreegames/maestro-cli/metadata"
 
 	"github.com/spf13/cobra"

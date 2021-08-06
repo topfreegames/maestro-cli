@@ -73,8 +73,6 @@ var releasesCmd = &cobra.Command{
 			mapRelease := release.(map[string]interface{})
 			fmt.Printf("%s\t%s\n", mapRelease["version"], mapRelease["createdAt"])
 		}
-
-		return
 	},
 }
 
