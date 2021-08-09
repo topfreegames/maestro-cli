@@ -1,8 +1,8 @@
 ---
-name: scheduler-name-9
+name: scheduler-name-1
 game: game-name
 version: 1.0.0
 ---
-name: scheduler-name-8
+name: scheduler-name-2
 game: game-name
-version: 1.0.0
+version: 1.0.1

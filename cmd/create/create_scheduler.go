@@ -8,7 +8,7 @@
 package create
 
 import (
-	// "context"
+	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -35,8 +35,7 @@ var marshler = &runtime.HTTPBodyMarshaler{
 var createSchedulerCmd = &cobra.Command{
 	Use:   "scheduler",
 	Short: "Creates new scheduler",
-	Long: `Creates a new scheduler on Maestro and, if worker is running, the 
-	rooms will be launched.`,
+	Long: `Uses a file (argument) to create a new scheduler on Maestro`,
 	Args: validateArgs,
 	RunE: run,
 }
@@ -59,14 +58,11 @@ func run(_ *cobra.Command, args []string) error {
 
 	filePath := args[0]
 	bts, _ := ioutil.ReadFile(filePath)
-	
-	requests := []*v1.CreateSchedulerRequest{}
-	err := yaml.Unmarshal(bts, bts)
-	if err != nil {
-		return fmt.Errorf("error parsing file to request: %w", err)
-	}
+	r := bytes.NewReader(bts)
+    dec := yaml.NewDecoder(r)
 
-	for _, request := range requests {
+    var request v1.CreateSchedulerRequest
+    for dec.Decode(&request) == nil {
 
 		serializedRequest, err := marshler.Marshal(request)
 		if err != nil {
@@ -80,7 +76,7 @@ func run(_ *cobra.Command, args []string) error {
 	
 		client := common.GetClient(config)
 	
-		fmt.Println("creating scheduler...")
+		fmt.Println("creating scheduler: ", request.Name)
 	
 		url := fmt.Sprintf("%s/schedulers", config.ServerURL)
 		body, status, err := client.Post(url, string(serializedRequest))
@@ -91,9 +87,9 @@ func run(_ *cobra.Command, args []string) error {
 			return fmt.Errorf("create scheduler response not ok, status: %s, body: %s", http.StatusText(status), string(body))
 		}
 	
-		fmt.Println("Successfully created scheduler")
-		fmt.Println(string(bts))
-	}
+		fmt.Println("Successfully created scheduler: ", request.Name)
+
+    }
 
 	return nil
 }
