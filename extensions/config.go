@@ -24,7 +24,7 @@ type Config struct {
 }
 
 // NewConfig ctor
-func NewConfig(token, serverURL string) *Config {
+func NewConfig(serverURL string) *Config {
 	c := &Config{
 		ServerURL: serverURL,
 	}

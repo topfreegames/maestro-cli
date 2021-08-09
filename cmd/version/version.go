@@ -5,7 +5,7 @@
 // http://www.opensource.org/licenses/mit-license
 // Copyright © 2017 Top Free Games <backend@tfgco.com>
 
-package cmd
+package version
 
 import (
 	"fmt"
@@ -15,16 +15,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// versionCmd represents the version command
-var versionCmd = &cobra.Command{
+// Cmd represents the version command
+var Cmd = &cobra.Command{
 	Use:   "version",
 	Short: "Maestro-cli version",
 	Long:  `Maestro-cli version`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		fmt.Println("Maestro-cli version:", metadata.Version)
 	},
-}
-
-func init() {
-	RootCmd.AddCommand(versionCmd)
 }
