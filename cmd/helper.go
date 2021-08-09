@@ -27,13 +27,10 @@ func newLog(cmdName string) *logrus.Logger {
 	switch Verbose {
 	case 0:
 		ll = logrus.ErrorLevel
-		break
 	case 1:
 		ll = logrus.WarnLevel
-		break
 	case 3:
 		ll = logrus.DebugLevel
-		break
 	default:
 		ll = logrus.InfoLevel
 	}

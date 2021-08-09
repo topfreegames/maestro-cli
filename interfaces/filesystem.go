@@ -8,8 +8,9 @@
 package interfaces
 
 import (
-	"github.com/spf13/afero"
 	"os"
+
+	"github.com/spf13/afero"
 )
 
 //FileSystem interface

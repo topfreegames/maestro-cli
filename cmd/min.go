@@ -45,11 +45,6 @@ var minCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if schedulerMin < 0 {
-			fmt.Printf("Error: min must be greater or equal than zero. Informed min was %d", schedulerMin)
-			os.Exit(1)
-		}
-
 		log.Debugf("updating %s", schedulerName)
 
 		config, err := getConfig()
