@@ -12,9 +12,10 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/topfreegames/maestro-cli/common"
+	"github.com/topfreegames/maestro-cli/cmd/create"
 	initPkg "github.com/topfreegames/maestro-cli/cmd/init"
 	"github.com/topfreegames/maestro-cli/cmd/version"
+	"github.com/topfreegames/maestro-cli/common"
 )
 
 // RootCmd is the root command for maestro CLI application
@@ -39,5 +40,6 @@ func init() {
 	)
 	RootCmd.PersistentFlags().StringVarP(&common.Context, "context", "c", "prod", "Maestro context, use it to manage different maestro clusters.")
 	RootCmd.AddCommand(initPkg.Cmd)
+	RootCmd.AddCommand(create.Cmd)
 	RootCmd.AddCommand(version.Cmd)
 }
