@@ -24,6 +24,7 @@ type Client struct {
 // NewClient ctor
 func NewClient(config *Config) *Client {
 	h := &Client{
+		config: config,
 	}
 	h.client = &http.Client{
 		Timeout: 20 * time.Minute,
@@ -34,6 +35,22 @@ func NewClient(config *Config) *Client {
 // Get does a get request
 func (c *Client) Get(url, body string) ([]byte, int, error) {
 	return c.requestWithBody("GET", url, body)
+
+	// req, err := http.NewRequest("GET", url, nil)
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
+	// c.addAuthHeader(req)
+	// res, err := c.client.Do(req)
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
+	// defer res.Body.Close()
+	// body, err := ioutil.ReadAll(res.Body)
+	// if err != nil {
+	// 	return nil, 0, err
+	// }
+	// return body, res.StatusCode, nil
 }
 
 // Put does a put request
@@ -53,6 +70,7 @@ func (c *Client) Delete(url string) ([]byte, int, error) {
 		return nil, 0, err
 	}
 
+	c.addAuthHeader(req)
 	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, 0, err
@@ -74,6 +92,7 @@ func (c *Client) requestWithBody(method, url, body string) ([]byte, int, error) 
 	}
 	req.Close = true
 
+	c.addAuthHeader(req)
 	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, 0, fmt.Errorf("Error creating cluster")
@@ -84,4 +103,13 @@ func (c *Client) requestWithBody(method, url, body string) ([]byte, int, error) 
 		return nil, 0, err
 	}
 	return responseBody, res.StatusCode, nil
+}
+
+func (c *Client) addAuthHeader(req *http.Request) {
+	if c.config != nil {
+		auth := fmt.Sprintf("Bearer %s", c.config.Token)
+		req.Header.Add("Authorization", auth)
+	}
+
+	req.Header.Add("Content-Type", "application/json")
 }

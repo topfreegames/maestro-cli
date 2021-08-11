@@ -20,7 +20,3 @@ bin
 
 .DS_Store
 *coverprofile
-
-# VS Code IDE
-.vscode
-__debug_bin
