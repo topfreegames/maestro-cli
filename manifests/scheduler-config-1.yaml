@@ -1,8 +1,52 @@
 ---
 name: scheduler-name-1
 game: game-name
-version: 1.0.0
+image: nginx:alpine
+ports:
+- containerPort: 8080
+  protocol: TCP
+  name: tcp
+limits:
+  memory: 128Mi
+  cpu: 20m
+shutdownTimeout: 10
+autoscaling:
+  min: 2
+  up:
+    delta: 1
+    trigger:
+      usage: 70
+      time: 1
+    cooldown: 1
+  down:
+    delta: 1
+    trigger:
+      usage: 50
+      time: 1
+    cooldown: 1
 ---
 name: scheduler-name-2
 game: game-name
-version: 1.0.1
+image: nginx:alpine
+ports:
+- containerPort: 8080
+  protocol: TCP
+  name: tcp
+limits:
+  memory: 128Mi
+  cpu: 20m
+shutdownTimeout: 10
+autoscaling:
+  min: 2
+  up:
+    delta: 1
+    trigger:
+      usage: 70
+      time: 1
+    cooldown: 1
+  down:
+    delta: 1
+    trigger:
+      usage: 50
+      time: 1
+    cooldown: 1

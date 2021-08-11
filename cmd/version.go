@@ -12,10 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package cmd
 
-import "github.com/topfreegames/maestro-cli/cmd"
+import (
+	"fmt"
 
-func main() {
-	cmd.Execute(cmd.RootCmd)
+	"github.com/topfreegames/maestro-cli/metadata"
+
+	"github.com/spf13/cobra"
+)
+
+// versionCmd represents the version command
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Maestro-cli version",
+	Long:  `Maestro-cli version`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Maestro-cli version:", metadata.Version)
+	},
+}
+
+func init() {
+	RootCmd.AddCommand(versionCmd)
 }
