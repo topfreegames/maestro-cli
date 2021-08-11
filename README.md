@@ -2,13 +2,13 @@
 [Maestro](https://github.com/topfreegames/maestro) command line interface
 
 ## About
-Maestro-cli calls Maestro api routes. Create, delete and update schedulers. All calls are authenticated with Google Oauth2, so it's necessary to login before. 
+Maestro-cli calls Maestro api routes. Create, delete and update schedulers.
 
 ## Quickstart
 * Download the latest release
-* Login
+* Init configuration
 ```
-maestro login http://server.url.com
+maestro init zooba http://server.url.com
 ```
 * Create scheduler
 ```
