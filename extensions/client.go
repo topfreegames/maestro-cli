@@ -8,7 +8,6 @@
 package extensions
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -74,7 +73,7 @@ func (c *Client) requestWithBody(method, url, body string) ([]byte, int, error) 
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, 0, fmt.Errorf("Error creating cluster")
+		return nil, 0, err
 	}
 	defer res.Body.Close()
 	responseBody, err := ioutil.ReadAll(res.Body)

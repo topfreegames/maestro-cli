@@ -35,7 +35,7 @@ func Execute(cmd *cobra.Command) {
 
 func init() {
 	RootCmd.PersistentFlags().IntVarP(
-		&common.Verbose, "verbose", "v", 0,
+		&common.Verbose, "verbose", "v", -1,
 		"Verbosity level => v0: Error, v1=Warning, v2=Info, v3=Debug",
 	)
 	RootCmd.PersistentFlags().StringVarP(&common.Context, "context", "c", "prod", "Maestro context, use it to manage different maestro clusters.")

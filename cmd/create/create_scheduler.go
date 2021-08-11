@@ -11,6 +11,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -35,10 +36,11 @@ var marshler = &runtime.HTTPBodyMarshaler{
 
 // createSchedulerCmd represents the create command
 var createSchedulerCmd = &cobra.Command{
-	Use:   "scheduler",
-	Short: "Creates new scheduler",
-	Long:  `Uses a file (argument) to create a new scheduler on Maestro`,
-	Args:  validateArgs,
+	Use:     "scheduler",
+	Short:   "Creates new scheduler",
+	Example: "maestro-cli create scheduler ./scheduler.yaml",
+	Long:    "Uses a file (argument) to create a new scheduler on Maestro.",
+	Args:    validateArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		client, config, err := getClientAndConfig()
 		if err != nil {
@@ -63,7 +65,7 @@ func NewCreateScheduler(client interfaces.Client, config *extensions.Config) *Cr
 
 func validateArgs(_ *cobra.Command, args []string) error {
 	if len(args) == 0 {
-		return errors.New("error: missing arg with scheduler config file path")
+		return errors.New("missing arg with scheduler config file path")
 	}
 
 	filePath := args[0]
@@ -77,6 +79,7 @@ func validateArgs(_ *cobra.Command, args []string) error {
 
 func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 
+	logger := common.GetLogger()
 	filePath := args[0]
 	bts, err := ioutil.ReadFile(filePath)
 	if err != nil {
@@ -90,10 +93,10 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 		var request v1.CreateSchedulerRequest
 		decodeErr := dec.Decode(&request)
 		if decodeErr != nil {
-			if decodeErr.Error() == "EOF" {
+			if decodeErr == io.EOF {
 				return nil
 			}
-			return decodeErr
+			return fmt.Errorf("invalid YAML file: %w", decodeErr)
 		}
 
 		serializedRequest, err := marshler.Marshal(&request)
@@ -101,7 +104,7 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 			return fmt.Errorf("error parsing request to json: %w", err)
 		}
 
-		fmt.Println("creating scheduler: ", request.Name)
+		logger.Debug("creating scheduler: " + request.Name)
 
 		url := fmt.Sprintf("%s/schedulers", cs.config.ServerURL)
 		body, status, err := cs.client.Post(url, string(serializedRequest))
@@ -112,7 +115,7 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 			return fmt.Errorf("create scheduler response not ok, status: %s, body: %s", http.StatusText(status), string(body))
 		}
 
-		fmt.Println("Successfully created scheduler: ", request.Name)
+		logger.Info("Successfully created scheduler: " + request.Name)
 	}
 }
 

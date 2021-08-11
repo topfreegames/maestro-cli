@@ -11,6 +11,8 @@ import (
 	"errors"
 
 	"github.com/topfreegames/maestro-cli/extensions"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // Verbose determines how verbose maestro will run under
@@ -30,6 +32,31 @@ func GetConfig() (*extensions.Config, error) {
 func GetClient(config *extensions.Config) *extensions.Client {
 	client := extensions.NewClient(config)
 	return client
+}
+
+func GetLogger() *zap.Logger {
+	ll := zap.InfoLevel
+	switch Verbose {
+	case 0:
+		ll = zap.ErrorLevel
+	case 1:
+		ll = zap.WarnLevel
+	case 3:
+		ll = zap.DebugLevel
+	default:
+		ll = zap.InfoLevel
+	}
+
+	log := zap.NewDevelopmentConfig()
+	log.OutputPaths = []string{"stdout"}
+	log.Level.SetLevel(ll)
+	log.EncoderConfig = zapcore.EncoderConfig{
+		MessageKey: "message",
+	}
+
+	logger, _ := log.Build()
+
+	return logger
 }
 
 func Success(response map[string]interface{}) (string, bool) {
