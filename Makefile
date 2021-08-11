@@ -34,17 +34,21 @@ test-coverage-func coverage-func: merge-profiles
 	@echo "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
 	@go tool cover -func=_build/coverage-all.out | egrep -v "100.0[%]"
 
+.PHONY: clear-coverage-profiles
 clear-coverage-profiles:
 	@find . -name '*.coverprofile' -delete
 
+.PHONY: unit-run
 unit-run:
 	@go run github.com/onsi/ginkgo/ginkgo -tags unit -cover -r -randomizeAllSpecs -randomizeSuites -skipMeasurements ${TEST_PACKAGES}
 
+.PHONY: gather-unit-profiles
 gather-unit-profiles:
 	@mkdir -p _build
 	@echo "mode: count" > _build/coverage-unit.out
 	@bash -c 'for f in $$(find . -name "*.coverprofile"); do tail -n +2 $$f >> _build/coverage-unit.out; done'
 
+.PHONY: build-all-platforms
 build-all-platforms:
 	@mkdir -p ${BIN_PATH}
 	@echo "Building for linux-i386..."
@@ -56,11 +60,17 @@ build-all-platforms:
 	@echo "Building for win-x86_64..."
 	@env GOOS=windows GOARCH=amd64 go build -o ${BIN_PATH}/${BIN_NAME}-win-x86_64
 
+.PHONY: mocks
 mocks:
 	@echo 'making mocks from ./interfaces'
 	mockgen -source=interfaces/client.go -destination=mocks/client.go -package=mocks
 	mockgen -source=interfaces/filesystem.go -destination=mocks/filesystem.go -package=mocks
 	@echo 'done, mocks on ./mocks'
 
+.PHONY: goimports
 goimports:
 	@go run golang.org/x/tools/cmd/goimports -w $(SOURCES)
+
+.PHONY: lint
+lint:
+	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run -E goimports ./...

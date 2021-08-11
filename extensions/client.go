@@ -8,7 +8,6 @@
 package extensions
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -17,14 +16,12 @@ import (
 
 // Client struct
 type Client struct {
-	config *Config
 	client *http.Client
 }
 
 // NewClient ctor
 func NewClient(config *Config) *Client {
-	h := &Client{
-	}
+	h := &Client{}
 	h.client = &http.Client{
 		Timeout: 20 * time.Minute,
 	}
@@ -76,7 +73,7 @@ func (c *Client) requestWithBody(method, url, body string) ([]byte, int, error) 
 
 	res, err := c.client.Do(req)
 	if err != nil {
-		return nil, 0, fmt.Errorf("Error creating cluster")
+		return nil, 0, err
 	}
 	defer res.Body.Close()
 	responseBody, err := ioutil.ReadAll(res.Body)
