@@ -9,8 +9,10 @@ package common
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/topfreegames/maestro-cli/extensions"
+	"github.com/topfreegames/maestro-cli/interfaces"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -19,6 +21,18 @@ import (
 var Verbose int
 
 var Context string
+
+func GetClientAndConfig() (interfaces.Client, *extensions.Config, error) {
+
+	config, err := GetConfig()
+	if err != nil {
+		return nil, nil, fmt.Errorf("error getting client config: %w", err)
+	}
+
+	client := GetClient(config)
+
+	return client, config, nil
+}
 
 func GetConfig() (*extensions.Config, error) {
 	filesystem := extensions.NewFileSystem()
