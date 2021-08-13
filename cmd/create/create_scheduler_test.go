@@ -17,7 +17,7 @@ import (
 	"github.com/topfreegames/maestro-cli/mocks"
 )
 
-func TestCreateOperation(t *testing.T) {
+func TestCreateSchedulerAction(t *testing.T) {
 	dirPath, _ := os.Getwd()
 	config := &extensions.Config{
 		ServerURL: "http://localhost:8080",
@@ -50,7 +50,7 @@ func TestCreateOperation(t *testing.T) {
 		defer mockCtrl.Finish()
 
 		client := mocks.NewMockClient(mockCtrl)
-		client.EXPECT().Post("http://localhost:8080/schedulers", gomock.Any()).Return([]byte(""), 200, nil)
+		client.EXPECT().Post(config.ServerURL+"/schedulers", gomock.Any()).Return([]byte(""), 200, nil)
 
 		err := NewCreateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config.yaml"})
 
@@ -62,7 +62,7 @@ func TestCreateOperation(t *testing.T) {
 		defer mockCtrl.Finish()
 
 		client := mocks.NewMockClient(mockCtrl)
-		client.EXPECT().Post("http://localhost:8080/schedulers", gomock.Any()).Return([]byte(""), 404, nil)
+		client.EXPECT().Post(config.ServerURL+"/schedulers", gomock.Any()).Return([]byte(""), 404, nil)
 
 		err := NewCreateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config.yaml"})
 

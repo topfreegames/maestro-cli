@@ -13,6 +13,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/maestro-cli/cmd/create"
+	"github.com/topfreegames/maestro-cli/cmd/get"
 	initPkg "github.com/topfreegames/maestro-cli/cmd/init"
 	"github.com/topfreegames/maestro-cli/cmd/version"
 	"github.com/topfreegames/maestro-cli/common"
@@ -42,4 +43,5 @@ func init() {
 	RootCmd.AddCommand(initPkg.Cmd)
 	RootCmd.AddCommand(create.Cmd)
 	RootCmd.AddCommand(version.Cmd)
+	RootCmd.AddCommand(get.Cmd)
 }

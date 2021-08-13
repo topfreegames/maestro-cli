@@ -42,7 +42,7 @@ var createSchedulerCmd = &cobra.Command{
 	Long:    "Uses a file (argument) to create a new scheduler on Maestro.",
 	Args:    validateArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client, config, err := getClientAndConfig()
+		client, config, err := common.GetClientAndConfig()
 		if err != nil {
 			return err
 		}
@@ -117,16 +117,4 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 
 		logger.Info("Successfully created scheduler: " + request.Name)
 	}
-}
-
-func getClientAndConfig() (interfaces.Client, *extensions.Config, error) {
-
-	config, err := common.GetConfig()
-	if err != nil {
-		return nil, nil, fmt.Errorf("error getting client config: %w", err)
-	}
-
-	client := common.GetClient(config)
-
-	return client, config, nil
 }
