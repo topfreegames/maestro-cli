@@ -49,7 +49,7 @@ func GetClient(config *extensions.Config) *extensions.Client {
 }
 
 func GetLogger() *zap.Logger {
-	ll := zap.InfoLevel
+	var ll zapcore.Level
 	switch Verbose {
 	case 0:
 		ll = zap.ErrorLevel
