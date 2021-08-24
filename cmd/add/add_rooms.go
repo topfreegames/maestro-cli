@@ -33,7 +33,7 @@ var marshler = &runtime.HTTPBodyMarshaler{
 
 // addRoomsCmd represents the create command
 var addRoomsCmd = &cobra.Command{
-	Use:     "romms",
+	Use:     "rooms",
 	Short:   "Add rooms to a given scheduler",
 	Example: "maestro-cli add rooms <scheduler_name> <amount>",
 	Long:    "Given the scheduler name and the amount, increase the number of rooms in Maestro.",
