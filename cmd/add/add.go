@@ -14,7 +14,7 @@ import (
 // Cmd represents the add command
 var Cmd = &cobra.Command{
 	Use:   "add",
-	Short: "Adition operation",
+	Short: "Addition operation",
 	Long:  `Adds a resource, to know more type maestro-cli add --help.`,
 }
 
