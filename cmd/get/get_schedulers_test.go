@@ -31,7 +31,7 @@ func TestGetSchedulersAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		schedulers := &v1.ListSchedulersReply{
+		schedulers := &v1.ListSchedulersResponse{
 			Schedulers: []*v1.Scheduler{
 				{
 					Name:      "scheduler-test-1",
