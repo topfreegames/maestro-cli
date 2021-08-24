@@ -76,10 +76,7 @@ func (a *AddRooms) run(_ *cobra.Command, args []string) error {
 
 	logger := common.GetLogger()
 	schedulerName := args[0]
-	roomsAmount, err := strconv.ParseInt(args[1], 10, 32)
-	if err != nil {
-		return errors.New("rooms amount must be and integer value (32 bits)")
-	}
+	roomsAmount, _ := strconv.ParseInt(args[1], 10, 32)
 
 	request := v1.AddRoomsRequest{
 		Amount: int32(roomsAmount),

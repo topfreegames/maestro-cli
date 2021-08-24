@@ -8,6 +8,7 @@
 package add
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -17,11 +18,6 @@ import (
 )
 
 func TestAddRoomsAction(t *testing.T) {
-
-	mockCtrl := gomock.NewController(t)
-	defer mockCtrl.Finish()
-
-	client := mocks.NewMockClient(mockCtrl)
 
 	config := &extensions.Config{
 		ServerURL: "http://localhost:8080",
@@ -46,7 +42,18 @@ func TestAddRoomsAction(t *testing.T) {
 		require.Equal(t, "rooms amount must be and integer value (32 bits)", err.Error())
 	})
 
+	t.Run("validate args with success", func(t *testing.T) {
+		err := validateArgs(nil, []string{"scheduler", "10"})
+
+		require.NoError(t, err)
+	})
+
 	t.Run("with success", func(t *testing.T) {
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		client := mocks.NewMockClient(mockCtrl)
 
 		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 200, nil)
 
@@ -55,7 +62,27 @@ func TestAddRoomsAction(t *testing.T) {
 		require.NoError(t, err)
 	})
 
+	t.Run("fails when HTTP request fails", func(t *testing.T) {
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		client := mocks.NewMockClient(mockCtrl)
+
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 0, fmt.Errorf("tcp connection failed"))
+
+		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "error on post request: tcp connection failed")
+	})
+
 	t.Run("fails when maestro API fails", func(t *testing.T) {
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		client := mocks.NewMockClient(mockCtrl)
 
 		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 404, nil)
 
