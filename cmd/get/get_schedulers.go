@@ -68,7 +68,7 @@ func (cs *GetSchedulers) run(_ *cobra.Command, args []string) error {
 
 	logger.Sugar().Debugf("success getting schedulers: %s", body)
 
-	var schedulers v1.ListSchedulersReply
+	var schedulers v1.ListSchedulersResponse
 	err = protojson.Unmarshal(body, &schedulers)
 	if err != nil {
 		return fmt.Errorf("error parsing response body: %w", err)

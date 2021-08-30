@@ -1,6 +1,8 @@
 # maestro-cli
 [Maestro](https://github.com/topfreegames/maestro) command line interface
 
+[![codecov](https://codecov.io/gh/topfreegames/maestro-cli/branch/next/graph/badge.svg?token=IJIA498X2D)](https://codecov.io/gh/topfreegames/maestro-cli)
+
 ## About
 Maestro-cli calls Maestro api routes. Create, delete and update schedulers.
 

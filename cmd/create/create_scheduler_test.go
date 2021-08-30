@@ -18,16 +18,17 @@ import (
 )
 
 func TestCreateSchedulerAction(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	client := mocks.NewMockClient(mockCtrl)
+
 	dirPath, _ := os.Getwd()
 	config := &extensions.Config{
 		ServerURL: "http://localhost:8080",
 	}
 
 	t.Run("fails when no file found on path", func(t *testing.T) {
-		mockCtrl := gomock.NewController(t)
-		defer mockCtrl.Finish()
-
-		client := mocks.NewMockClient(mockCtrl)
 		err := NewCreateScheduler(client, config).run(nil, []string{"fixtures/scheduler-config-not-found.yaml"})
 
 		require.Error(t, err)
@@ -35,10 +36,6 @@ func TestCreateSchedulerAction(t *testing.T) {
 	})
 
 	t.Run("fails when file found bad format", func(t *testing.T) {
-		mockCtrl := gomock.NewController(t)
-		defer mockCtrl.Finish()
-
-		client := mocks.NewMockClient(mockCtrl)
 		err := NewCreateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config-bad-format.yaml"})
 
 		require.Error(t, err)
@@ -46,10 +43,6 @@ func TestCreateSchedulerAction(t *testing.T) {
 	})
 
 	t.Run("with success", func(t *testing.T) {
-		mockCtrl := gomock.NewController(t)
-		defer mockCtrl.Finish()
-
-		client := mocks.NewMockClient(mockCtrl)
 		client.EXPECT().Post(config.ServerURL+"/schedulers", gomock.Any()).Return([]byte(""), 200, nil)
 
 		err := NewCreateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config.yaml"})
@@ -58,10 +51,6 @@ func TestCreateSchedulerAction(t *testing.T) {
 	})
 
 	t.Run("fails when maestro API fails", func(t *testing.T) {
-		mockCtrl := gomock.NewController(t)
-		defer mockCtrl.Finish()
-
-		client := mocks.NewMockClient(mockCtrl)
 		client.EXPECT().Post(config.ServerURL+"/schedulers", gomock.Any()).Return([]byte(""), 404, nil)
 
 		err := NewCreateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config.yaml"})
