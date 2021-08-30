@@ -24,6 +24,7 @@ import (
 
 	v1 "github.com/topfreegames/maestro/pkg/api/v1"
 	yaml "gopkg.in/yaml.v2"
+	k8s_yaml "sigs.k8s.io/yaml"
 )
 
 var marshler = &runtime.HTTPBodyMarshaler{
@@ -86,17 +87,22 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 		return fmt.Errorf("error reading scheduler file: %w", err)
 	}
 
-	r := bytes.NewReader(bts)
-	dec := yaml.NewDecoder(r)
+	yamls, err := cs.SplitYAML(bts)
+	if err != nil {
+		return fmt.Errorf("error splitting YAML file into multiple objects: %w", err)
+	}
 
-	for {
+	for _, yaml_object := range yamls {
+
+		schedulerJsonBytes, err := k8s_yaml.YAMLToJSON(yaml_object)
+		if err != nil {
+			return fmt.Errorf("error parsing YAML to Json: %w", err)
+		}
+
 		var request v1.CreateSchedulerRequest
-		decodeErr := dec.Decode(&request)
-		if decodeErr != nil {
-			if decodeErr == io.EOF {
-				return nil
-			}
-			return fmt.Errorf("invalid YAML file: %w", decodeErr)
+		err = protojson.Unmarshal(schedulerJsonBytes, &request)
+		if err != nil {
+			return fmt.Errorf("error parsing Json to v1.CreateSchedulerRequest: %w", err)
 		}
 
 		serializedRequest, err := marshler.Marshal(&request)
@@ -117,4 +123,29 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 
 		logger.Info("Successfully created scheduler: " + request.Name)
 	}
+
+	return nil
+}
+
+func (cs *CreateScheduler) SplitYAML(resources []byte) ([][]byte, error) {
+
+	dec := yaml.NewDecoder(bytes.NewReader(resources))
+
+	var res [][]byte
+	for {
+		var value interface{}
+		err := dec.Decode(&value)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		valueBytes, err := yaml.Marshal(value)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, valueBytes)
+	}
+	return res, nil
 }
