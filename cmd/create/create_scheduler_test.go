@@ -15,6 +15,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/topfreegames/maestro-cli/extensions"
 	"github.com/topfreegames/maestro-cli/mocks"
+	v1 "github.com/topfreegames/maestro/pkg/api/v1"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestCreateSchedulerAction(t *testing.T) {
@@ -28,6 +30,50 @@ func TestCreateSchedulerAction(t *testing.T) {
 		ServerURL: "http://localhost:8080",
 	}
 
+	t.Run("with success", func(t *testing.T) {
+		expectedStructuredBody := v1.CreateSchedulerRequest{
+			Name:                   "scheduler-name-1",
+			Game:                   "game-name",
+			TerminationGracePeriod: 100,
+			PortRange: &v1.PortRange{
+				Start: 1,
+				End:   1000,
+			},
+			Containers: []*v1.Container{{
+				Name:            "game-room-container-name",
+				Image:           "game-room-container-image",
+				ImagePullPolicy: "IfNotPresent",
+				Command:         []string{"./run"},
+				Environment: []*v1.ContainerEnvironment{{
+					Name:  "env-var-name",
+					Value: "env-var-value",
+				}},
+				Requests: &v1.ContainerResources{
+					Memory: "100mi",
+					Cpu:    "100m",
+				},
+				Limits: &v1.ContainerResources{
+					Memory: "200mi",
+					Cpu:    "200m",
+				},
+				Ports: []*v1.ContainerPort{{
+					Name:     "container-port-name",
+					Protocol: "https",
+					Port:     12345,
+					HostPort: 54321,
+				}},
+			}},
+		}
+
+		expectedStringBody, _ := protojson.Marshal(&expectedStructuredBody)
+
+		client.EXPECT().Post(config.ServerURL+"/schedulers", gomock.Any()).Return([]byte(expectedStringBody), 200, nil)
+
+		err := NewCreateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config.yaml"})
+
+		require.NoError(t, err)
+	})
+
 	t.Run("fails when no file found on path", func(t *testing.T) {
 		err := NewCreateScheduler(client, config).run(nil, []string{"fixtures/scheduler-config-not-found.yaml"})
 
@@ -39,15 +85,8 @@ func TestCreateSchedulerAction(t *testing.T) {
 		err := NewCreateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config-bad-format.yaml"})
 
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "cannot unmarshal !!str `name` into v1.CreateSchedulerRequest")
-	})
-
-	t.Run("with success", func(t *testing.T) {
-		client.EXPECT().Post(config.ServerURL+"/schedulers", gomock.Any()).Return([]byte(""), 200, nil)
-
-		err := NewCreateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config.yaml"})
-
-		require.NoError(t, err)
+		require.Contains(t, err.Error(), "error parsing Json to v1.CreateSchedulerRequest")
+		require.Contains(t, err.Error(), "unexpected token \"name\"")
 	})
 
 	t.Run("fails when maestro API fails", func(t *testing.T) {
