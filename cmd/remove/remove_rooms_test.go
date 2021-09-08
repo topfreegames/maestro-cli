@@ -5,7 +5,7 @@
 // http://www.opensource.org/licenses/mit-license
 // Copyright © 2017 Top Free Games <backend@tfgco.com>
 
-package add
+package remove
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ import (
 	"github.com/topfreegames/maestro-cli/mocks"
 )
 
-func TestAddRoomsAction(t *testing.T) {
+func TestRemoveRoomsAction(t *testing.T) {
 
 	config := &extensions.Config{
 		ServerURL: "http://localhost:8080",
@@ -55,11 +55,27 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\", \"amount\":10}").Return([]byte(""), 200, nil)
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/remove-rooms", "{\"amount\":10}").
+			Return([]byte("{\"operationId\": \"abc\"}"), 200, nil)
 
-		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
+		err := NewRemoveRooms(client, config).run(nil, []string{"scheduler", "10"})
 
 		require.NoError(t, err)
+	})
+
+	t.Run("fails when response deserialization fails", func(t *testing.T) {
+
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		client := mocks.NewMockClient(mockCtrl)
+
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/remove-rooms", "{\"amount\":10}").Return([]byte(""), 200, nil)
+
+		err := NewRemoveRooms(client, config).run(nil, []string{"scheduler", "10"})
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "error deserializing remove rooms response")
 	})
 
 	t.Run("fails when HTTP request fails", func(t *testing.T) {
@@ -69,9 +85,9 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\", \"amount\":10}").Return([]byte(""), 0, fmt.Errorf("tcp connection failed"))
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/remove-rooms", "{\"amount\":10}").Return([]byte(""), 0, fmt.Errorf("tcp connection failed"))
 
-		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
+		err := NewRemoveRooms(client, config).run(nil, []string{"scheduler", "10"})
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "error on post request: tcp connection failed")
@@ -84,11 +100,11 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\", \"amount\":10}").Return([]byte(""), 404, nil)
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/remove-rooms", "{\"amount\":10}").Return([]byte(""), 404, nil)
 
-		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
+		err := NewRemoveRooms(client, config).run(nil, []string{"scheduler", "10"})
 
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "add rooms response not ok, status: Not Found, body: ")
+		require.Contains(t, err.Error(), "remove rooms response not ok, status: Not Found, body: ")
 	})
 }
