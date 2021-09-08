@@ -55,7 +55,7 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 200, nil)
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\", \"amount\":10}").Return([]byte(""), 200, nil)
 
 		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
 
@@ -69,7 +69,7 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 0, fmt.Errorf("tcp connection failed"))
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\", \"amount\":10}").Return([]byte(""), 0, fmt.Errorf("tcp connection failed"))
 
 		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
 
@@ -84,7 +84,7 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 404, nil)
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\", \"amount\":10}").Return([]byte(""), 404, nil)
 
 		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
 
