@@ -11,7 +11,7 @@ require (
 	github.com/spf13/afero v1.6.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
-	github.com/topfreegames/maestro v1.0.1-0.20210902215155-5fa930a2375f
+	github.com/topfreegames/maestro v1.0.1-0.20210908185840-76d2610cf3e6
 	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad
 	go.uber.org/zap v1.18.1
 	google.golang.org/protobuf v1.27.1
