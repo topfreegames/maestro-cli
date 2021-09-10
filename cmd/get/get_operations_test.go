@@ -87,7 +87,7 @@ func TestGetOperationsAction(t *testing.T) {
 		require.Contains(t, err.Error(), "error parsing response body")
 	})
 
-	t.Run("fails when HTTP request faile", func(t *testing.T) {
+	t.Run("fails when HTTP request failed", func(t *testing.T) {
 		mockCtrl := gomock.NewController(t)
 		defer mockCtrl.Finish()
 

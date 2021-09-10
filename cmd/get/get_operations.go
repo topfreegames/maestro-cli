@@ -64,7 +64,7 @@ func NewGetOperations(client interfaces.Client, config *extensions.Config) *GetO
 
 func (cs *GetOperations) run(_ *cobra.Command, args []string) error {
 	logger := common.GetLogger()
-	logger.Debug("getting schedulers")
+	logger.Debug("getting operations")
 
 	schedulerName := args[0]
 	url := fmt.Sprintf("%s/schedulers/%s/operations", cs.config.ServerURL, schedulerName)
