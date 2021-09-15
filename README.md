@@ -30,6 +30,10 @@ maestro status scheduler-name
 ```
 maestro releases scheduler-name
 ```
+* Get scheduler events
+```
+maestro events <scheduler-name> --page <page>
+```
 * Rollback to previous release
 ```
 maestro rollback scheduler-name v1
