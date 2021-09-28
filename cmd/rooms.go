@@ -61,7 +61,7 @@ var roomsCmd = &cobra.Command{
 		url = fmt.Sprintf("%s/scheduler/%s/rooms/status/%s?limit=%d&offset=%d", config.ServerURL, schedulerName, status, defaultLimit, page)
 		body, responseStatus, err := client.Get(url, "")
 		if err != nil {
-			log.WithError(err).Fatal("error on get events request")
+			log.WithError(err).Fatal("error on get room request")
 		}
 
 		if responseStatus != http.StatusOK {
