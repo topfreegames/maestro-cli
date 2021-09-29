@@ -34,6 +34,14 @@ maestro releases scheduler-name
 ```
 maestro events <scheduler-name> --page <page>
 ```
+* Get scheduler rooms list that are in a given status
+```
+maestro rooms <scheduler-name> <statu> --page <page>
+```
+* Get scheduler specific room details
+```
+maestro room <scheduler-name> <room-id>
+```
 * Rollback to previous release
 ```
 maestro rollback scheduler-name v1
