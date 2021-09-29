@@ -26,7 +26,27 @@ import (
 	"time"
 )
 
-var defaultLimit = 30
+const (
+	defaultLimit = 30
+
+	//StatusCreating represents a room status
+	StatusCreating = "creating"
+
+	//StatusReady represents a room status
+	StatusReady = "ready"
+
+	//StatusOccupied represents a room status
+	StatusOccupied = "occupied"
+
+	//StatusReadyOrOccupied represents an aggregate of room status
+	StatusReadyOrOccupied = "ready_or_occupied"
+
+	//StatusTerminating represents a room status
+	StatusTerminating = "terminating"
+
+	//StatusTerminated represents a room status
+	StatusTerminated = "terminated"
+)
 
 type gameRoom struct {
 	RoomId           string
@@ -57,6 +77,20 @@ var roomsCmd = &cobra.Command{
 		}
 		schedulerName := args[0]
 		status := args[1]
+
+		if !isValidStatus(status) {
+			log.Fatal(fmt.Sprintf(
+				"error: %s is an invalid status option, valid options are: [%s, %s, %s, %s, %s, %s]",
+				status,
+				StatusTerminated,
+				StatusTerminating,
+				StatusReady,
+				StatusOccupied,
+				StatusReadyOrOccupied,
+				StatusCreating,
+			))
+			return
+		}
 
 		url = fmt.Sprintf("%s/scheduler/%s/rooms/status/%s?limit=%d&offset=%d", config.ServerURL, schedulerName, status, defaultLimit, page)
 		body, responseStatus, err := client.Get(url, "")
@@ -109,6 +143,14 @@ func printRoomsTable(rooms []gameRoom) {
 			pingPrettyAge,
 		)
 	}
+}
+
+func isValidStatus(status string) bool {
+	switch status {
+	case StatusCreating, StatusReady, StatusOccupied, StatusTerminating, StatusTerminated, StatusReadyOrOccupied:
+		return true
+	}
+	return false
 }
 
 func init() {
