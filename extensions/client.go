@@ -106,7 +106,7 @@ func (c *Client) requestWithBody(method, url, body string) ([]byte, int, error) 
 }
 
 func (c *Client) addAuthHeader(req *http.Request) {
-	if c.config != nil {
+	if c.config != nil && c.config.Token != "" {
 		auth := fmt.Sprintf("Bearer %s", c.config.Token)
 		req.Header.Add("Authorization", auth)
 	}
