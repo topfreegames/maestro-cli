@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/cobra"
 	"net/http"
 	"os"
-	"strings"
 	"text/tabwriter"
 	"time"
 )
@@ -131,14 +130,17 @@ func printRoomsTable(rooms []gameRoom) {
 		prettyAge := durafmt.ParseShort(time.Since(createdAt)).String()
 		lastPingAt, _ := time.Parse(time.RFC3339Nano, room.LastPingAt)
 		pingPrettyAge := durafmt.ParseShort(time.Since(lastPingAt)).String()
+		if lastPingAt.Before(createdAt) || lastPingAt.Equal(createdAt) {
+			pingPrettyAge = "no ping sent yet"
+		}
 
 		fmt.Fprintf(
 			w,
 			format,
-			strings.ToUpper(room.SchedulerName),
-			strings.ToUpper(room.SchedulerVersion),
-			strings.ToUpper(room.RoomId),
-			strings.ToUpper(room.Status),
+			room.SchedulerName,
+			room.SchedulerVersion,
+			room.RoomId,
+			room.Status,
 			prettyAge,
 			pingPrettyAge,
 		)
