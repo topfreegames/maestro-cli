@@ -54,6 +54,7 @@ type gameRoom struct {
 	Status           string
 	CreatedAt        string
 	LastPingAt       string
+	LastPingMetadata map[string]interface{}
 }
 
 // roomsCmd represents the rooms command
@@ -121,8 +122,8 @@ func printRoomsTable(rooms []gameRoom) {
 
 	defer w.Flush()
 
-	format := "%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\n"
-	fmt.Fprintf(w, format, "SCHEDULER_NAME", "SCHEDULER_VERSION", "ROOM_ID", "STATUS", "ROOM_AGE", "LAST_PING_AGE")
+	format := "%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\n"
+	fmt.Fprintf(w, format, "SCHEDULER_NAME", "SCHEDULER_VERSION", "ROOM_ID", "STATUS", "ROOM_AGE", "LAST_PING_AGE", "LAST_PING_METADATA")
 
 	for _, room := range rooms {
 
@@ -133,6 +134,7 @@ func printRoomsTable(rooms []gameRoom) {
 		if lastPingAt.Before(createdAt) || lastPingAt.Equal(createdAt) {
 			pingPrettyAge = "no ping sent yet"
 		}
+		prettyLastPingMetadata, _ := json.Marshal(room.LastPingMetadata)
 
 		fmt.Fprintf(
 			w,
@@ -143,6 +145,7 @@ func printRoomsTable(rooms []gameRoom) {
 			room.Status,
 			prettyAge,
 			pingPrettyAge,
+			string(prettyLastPingMetadata),
 		)
 	}
 }
