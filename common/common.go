@@ -113,8 +113,5 @@ func SplitYAML(resources []byte) ([][]byte, error) {
 }
 
 func IsYAML(path string) bool {
-	if filepath.Ext(path) != ".yaml" {
-		return false
-	}
-	return true
+	return filepath.Ext(path) == ".yaml"
 }
