@@ -19,6 +19,7 @@ import (
 	"github.com/topfreegames/maestro-cli/cmd/create"
 	"github.com/topfreegames/maestro-cli/cmd/get"
 	initPkg "github.com/topfreegames/maestro-cli/cmd/init"
+	"github.com/topfreegames/maestro-cli/cmd/update"
 	"github.com/topfreegames/maestro-cli/cmd/version"
 	"github.com/topfreegames/maestro-cli/common"
 )
@@ -51,4 +52,5 @@ func init() {
 	RootCmd.AddCommand(cancel.Cmd)
 	RootCmd.AddCommand(version.Cmd)
 	RootCmd.AddCommand(get.Cmd)
+	RootCmd.AddCommand(update.Cmd)
 }

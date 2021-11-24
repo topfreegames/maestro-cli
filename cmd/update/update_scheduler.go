@@ -110,9 +110,10 @@ func (cs *UpdateScheduler) run(_ *cobra.Command, args []string) error {
 			return fmt.Errorf("error parsing request to json: %w", err)
 		}
 
-		logger.Debug("creating scheduler: " + request.Name)
+		logger.Debug("updating scheduler: " + request.Name)
 
 		url := fmt.Sprintf("%s/schedulers", cs.config.ServerURL)
+
 		body, status, err := cs.client.Put(url, string(serializedRequest))
 		if err != nil {
 			return fmt.Errorf("error on Put request: %w", err)
@@ -121,7 +122,12 @@ func (cs *UpdateScheduler) run(_ *cobra.Command, args []string) error {
 			return fmt.Errorf("update scheduler response not ok, status: %s, body: %s", http.StatusText(status), string(body))
 		}
 
-		logger.Info("Successfully updated scheduler: " + request.Name)
+		var response v1.UpdateSchedulerResponse
+		err = protojson.Unmarshal(body, &response)
+		if err != nil {
+			return fmt.Errorf("error deserializing update scheduler response, details: %w", err)
+		}
+		logger.Info("Successfully executed update scheduler. Operation id: " + response.OperationId)
 	}
 
 	return nil
