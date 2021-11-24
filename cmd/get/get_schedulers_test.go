@@ -32,7 +32,7 @@ func TestGetSchedulersAction(t *testing.T) {
 		client := mocks.NewMockClient(mockCtrl)
 
 		schedulers := &v1.ListSchedulersResponse{
-			Schedulers: []*v1.Scheduler{
+			Schedulers: []*v1.SchedulerWithoutSpec{
 				{
 					Name:      "scheduler-test-1",
 					Game:      "the-game",
