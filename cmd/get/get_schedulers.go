@@ -79,7 +79,7 @@ func (cs *GetSchedulers) run(_ *cobra.Command, args []string) error {
 	return nil
 }
 
-func (cs *GetSchedulers) printSchedulersTable(schedulers []*v1.Scheduler) {
+func (cs *GetSchedulers) printSchedulersTable(schedulers []*v1.SchedulerWithoutSpec) {
 	w := new(tabwriter.Writer)
 
 	// minwidth, tabwidth, padding, padchar, flags
