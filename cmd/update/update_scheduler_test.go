@@ -59,6 +59,13 @@ func TestUpdateSchedulerAction(t *testing.T) {
 		require.Contains(t, err.Error(), "unexpected token \"name\"")
 	})
 
+	t.Run("fails when file is not .yaml", func(t *testing.T) {
+		err := NewUpdateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/file_not_yaml.json"})
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "file should be .yaml")
+	})
+
 	t.Run("fails when maestro API fails", func(t *testing.T) {
 		client.EXPECT().Put(config.ServerURL+"/schedulers", gomock.Any()).Return([]byte(""), 404, nil)
 

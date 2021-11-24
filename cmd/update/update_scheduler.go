@@ -8,10 +8,8 @@
 package update
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -23,11 +21,10 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/topfreegames/maestro/pkg/api/v1"
-	yaml "gopkg.in/yaml.v2"
 	k8s_yaml "sigs.k8s.io/yaml"
 )
 
-var marshler = &runtime.HTTPBodyMarshaler{
+var marshaller = &runtime.HTTPBodyMarshaler{
 	Marshaler: &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
 			EmitUnpopulated: true,
@@ -40,7 +37,7 @@ var updateSchedulerCmd = &cobra.Command{
 	Use:     "scheduler",
 	Short:   "Updates scheduler",
 	Example: "maestro-cli update scheduler ./scheduler.yaml",
-	Long:    "Uses a file (argument) to update a new scheduler on Maestro.",
+	Long:    "Uses a .yaml file (argument) to update a new scheduler on Maestro.",
 	Args:    validateArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		client, config, err := common.GetClientAndConfig()
@@ -86,72 +83,61 @@ func (cs *UpdateScheduler) run(_ *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("error reading scheduler file: %w", err)
 	}
+	if isYAML := common.IsYAML(filePath); !isYAML {
+		return fmt.Errorf("file should be .yaml")
+	}
 
-	yamls, err := cs.SplitYAML(bts)
+	yamls, err := common.SplitYAML(bts)
 	if err != nil {
 		return fmt.Errorf("error splitting YAML file into multiple objects: %w", err)
 	}
 
 	for _, yaml_object := range yamls {
-
 		schedulerJsonBytes, err := k8s_yaml.YAMLToJSON(yaml_object)
 		if err != nil {
 			return fmt.Errorf("error parsing YAML to Json: %w", err)
 		}
 
-		var request v1.UpdateSchedulerRequest
-		err = protojson.Unmarshal(schedulerJsonBytes, &request)
+		operationId, err := cs.EnqueueUpdateSchedulerOperation(schedulerJsonBytes)
 		if err != nil {
-			return fmt.Errorf("error parsing Json to v1.UpdateSchedulerRequest: %w", err)
+			return err
 		}
-
-		serializedRequest, err := marshler.Marshal(&request)
-		if err != nil {
-			return fmt.Errorf("error parsing request to json: %w", err)
-		}
-
-		logger.Debug("updating scheduler: " + request.Name)
-
-		url := fmt.Sprintf("%s/schedulers", cs.config.ServerURL)
-
-		body, status, err := cs.client.Put(url, string(serializedRequest))
-		if err != nil {
-			return fmt.Errorf("error on Put request: %w", err)
-		}
-		if status != http.StatusOK {
-			return fmt.Errorf("update scheduler response not ok, status: %s, body: %s", http.StatusText(status), string(body))
-		}
-
-		var response v1.UpdateSchedulerResponse
-		err = protojson.Unmarshal(body, &response)
-		if err != nil {
-			return fmt.Errorf("error deserializing update scheduler response, details: %w", err)
-		}
-		logger.Info("Successfully executed update scheduler. Operation id: " + response.OperationId)
+		logger.Info("Successfully executed update scheduler. Operation id: " + operationId)
 	}
 
 	return nil
 }
 
-func (cs *UpdateScheduler) SplitYAML(resources []byte) ([][]byte, error) {
+func (cs *UpdateScheduler) EnqueueUpdateSchedulerOperation(schedulerJsonBytes []byte) (string, error) {
+	logger := common.GetLogger()
 
-	dec := yaml.NewDecoder(bytes.NewReader(resources))
-
-	var res [][]byte
-	for {
-		var value interface{}
-		err := dec.Decode(&value)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		valueBytes, err := yaml.Marshal(value)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, valueBytes)
+	var request v1.UpdateSchedulerRequest
+	err := protojson.Unmarshal(schedulerJsonBytes, &request)
+	if err != nil {
+		return "", fmt.Errorf("error parsing Json to v1.UpdateSchedulerRequest: %w", err)
 	}
-	return res, nil
+
+	serializedRequest, err := marshaller.Marshal(&request)
+	if err != nil {
+		return "", fmt.Errorf("error parsing request to json: %w", err)
+	}
+
+	logger.Debug("updating scheduler: " + request.Name)
+
+	url := fmt.Sprintf("%s/schedulers", cs.config.ServerURL)
+
+	body, status, err := cs.client.Put(url, string(serializedRequest))
+	if err != nil {
+		return "", fmt.Errorf("error on Put request: %w", err)
+	}
+	if status != http.StatusOK {
+		return "", fmt.Errorf("update scheduler response not ok, status: %s, body: %s", http.StatusText(status), string(body))
+	}
+
+	var response v1.UpdateSchedulerResponse
+	err = protojson.Unmarshal(body, &response)
+	if err != nil {
+		return "", fmt.Errorf("error deserializing update scheduler response, details: %w", err)
+	}
+	return response.OperationId, nil
 }

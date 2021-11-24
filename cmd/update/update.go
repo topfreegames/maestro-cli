@@ -14,7 +14,7 @@ import (
 // Cmd represents the create command
 var Cmd = &cobra.Command{
 	Use:   "update",
-	Short: "Updates a scheduler",
+	Short: "Updates a resource",
 	Long:  `Updates a resource. To know more type maestro-cli update --help.`,
 }
 

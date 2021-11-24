@@ -8,10 +8,8 @@
 package create
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -23,7 +21,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/topfreegames/maestro/pkg/api/v1"
-	yaml "gopkg.in/yaml.v2"
 	k8s_yaml "sigs.k8s.io/yaml"
 )
 
@@ -87,7 +84,7 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 		return fmt.Errorf("error reading scheduler file: %w", err)
 	}
 
-	yamls, err := cs.SplitYAML(bts)
+	yamls, err := common.SplitYAML(bts)
 	if err != nil {
 		return fmt.Errorf("error splitting YAML file into multiple objects: %w", err)
 	}
@@ -125,27 +122,4 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-func (cs *CreateScheduler) SplitYAML(resources []byte) ([][]byte, error) {
-
-	dec := yaml.NewDecoder(bytes.NewReader(resources))
-
-	var res [][]byte
-	for {
-		var value interface{}
-		err := dec.Decode(&value)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		valueBytes, err := yaml.Marshal(value)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, valueBytes)
-	}
-	return res, nil
 }
