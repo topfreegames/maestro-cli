@@ -8,6 +8,7 @@
 package update
 
 import (
+	"errors"
 	"os"
 	"testing"
 
@@ -73,5 +74,14 @@ func TestUpdateSchedulerAction(t *testing.T) {
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "update scheduler response not ok, status: Not Found, body: ")
+	})
+
+	t.Run("fails when got error on calling maestro API", func(t *testing.T) {
+		client.EXPECT().Put(config.ServerURL+"/schedulers", gomock.Any()).Return([]byte(""), 0, errors.New("error on API call"))
+
+		err := NewUpdateScheduler(client, config).run(nil, []string{dirPath + "/fixtures/scheduler-config.yaml"})
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "error on Put request: ")
 	})
 }
