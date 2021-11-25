@@ -13,7 +13,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/maestro-cli/common"
 	"github.com/topfreegames/maestro-cli/extensions"
@@ -23,14 +22,6 @@ import (
 	v1 "github.com/topfreegames/maestro/pkg/api/v1"
 	k8s_yaml "sigs.k8s.io/yaml"
 )
-
-var marshaller = &runtime.HTTPBodyMarshaler{
-	Marshaler: &runtime.JSONPb{
-		MarshalOptions: protojson.MarshalOptions{
-			EmitUnpopulated: true,
-		},
-	},
-}
 
 // updateSchedulerCmd represents the update command
 var updateSchedulerCmd = &cobra.Command{
@@ -117,7 +108,7 @@ func (cs *UpdateScheduler) EnqueueUpdateSchedulerOperation(schedulerJsonBytes []
 		return "", fmt.Errorf("error parsing Json to v1.UpdateSchedulerRequest: %w", err)
 	}
 
-	serializedRequest, err := marshaller.Marshal(&request)
+	serializedRequest, err := common.Marshaller.Marshal(&request)
 	if err != nil {
 		return "", fmt.Errorf("error parsing request to json: %w", err)
 	}

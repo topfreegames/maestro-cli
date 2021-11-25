@@ -13,6 +13,8 @@ import (
 
 	v1 "github.com/topfreegames/maestro/pkg/api/v1"
 
+	"github.com/topfreegames/maestro-cli/common"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/topfreegames/maestro-cli/extensions"
@@ -61,7 +63,7 @@ func TestAddRoomsAction(t *testing.T) {
 			Amount: int32(10),
 		}
 
-		serializedRequest, err := marshler.Marshal(&request)
+		serializedRequest, err := common.Marshaller.Marshal(&request)
 		require.NoError(t, err)
 
 		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", string(serializedRequest)).Return([]byte(""), 200, nil)
@@ -82,7 +84,7 @@ func TestAddRoomsAction(t *testing.T) {
 			Amount: int32(10),
 		}
 
-		serializedRequest, err := marshler.Marshal(&request)
+		serializedRequest, err := common.Marshaller.Marshal(&request)
 		require.NoError(t, err)
 
 		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", string(serializedRequest)).Return([]byte(""), 0, fmt.Errorf("tcp connection failed"))
@@ -104,7 +106,7 @@ func TestAddRoomsAction(t *testing.T) {
 			Amount: int32(10),
 		}
 
-		serializedRequest, err := marshler.Marshal(&request)
+		serializedRequest, err := common.Marshaller.Marshal(&request)
 		require.NoError(t, err)
 
 		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", string(serializedRequest)).Return([]byte(""), 404, nil)

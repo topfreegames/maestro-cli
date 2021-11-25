@@ -14,6 +14,9 @@ import (
 	"io"
 	"path/filepath"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"github.com/topfreegames/maestro-cli/extensions"
 	"github.com/topfreegames/maestro-cli/interfaces"
 	"go.uber.org/zap"
@@ -114,4 +117,12 @@ func SplitYAML(resources []byte) ([][]byte, error) {
 
 func IsYAML(path string) bool {
 	return filepath.Ext(path) == ".yaml"
+}
+
+var Marshaller = &runtime.HTTPBodyMarshaler{
+	Marshaler: &runtime.JSONPb{
+		MarshalOptions: protojson.MarshalOptions{
+			EmitUnpopulated: true,
+		},
+	},
 }
