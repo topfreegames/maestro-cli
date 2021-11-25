@@ -13,23 +13,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/maestro-cli/common"
 	"github.com/topfreegames/maestro-cli/extensions"
 	"github.com/topfreegames/maestro-cli/interfaces"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/topfreegames/maestro/pkg/api/v1"
 )
-
-var marshler = &runtime.HTTPBodyMarshaler{
-	Marshaler: &runtime.JSONPb{
-		MarshalOptions: protojson.MarshalOptions{
-			EmitUnpopulated: true,
-		},
-	},
-}
 
 // addRoomsCmd represents the create command
 var addRoomsCmd = &cobra.Command{
@@ -82,7 +72,7 @@ func (a *AddRooms) run(_ *cobra.Command, args []string) error {
 		Amount: int32(roomsAmount),
 	}
 
-	serializedRequest, err := marshler.Marshal(&request)
+	serializedRequest, err := common.Marshaller.Marshal(&request)
 	if err != nil {
 		return fmt.Errorf("error parsing request to json: %w", err)
 	}

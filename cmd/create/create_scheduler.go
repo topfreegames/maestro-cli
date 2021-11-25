@@ -8,14 +8,11 @@
 package create
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/maestro-cli/common"
 	"github.com/topfreegames/maestro-cli/extensions"
@@ -23,17 +20,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	v1 "github.com/topfreegames/maestro/pkg/api/v1"
-	yaml "gopkg.in/yaml.v2"
 	k8s_yaml "sigs.k8s.io/yaml"
 )
-
-var marshler = &runtime.HTTPBodyMarshaler{
-	Marshaler: &runtime.JSONPb{
-		MarshalOptions: protojson.MarshalOptions{
-			EmitUnpopulated: true,
-		},
-	},
-}
 
 // createSchedulerCmd represents the create command
 var createSchedulerCmd = &cobra.Command{
@@ -87,7 +75,7 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 		return fmt.Errorf("error reading scheduler file: %w", err)
 	}
 
-	yamls, err := cs.SplitYAML(bts)
+	yamls, err := common.SplitYAML(bts)
 	if err != nil {
 		return fmt.Errorf("error splitting YAML file into multiple objects: %w", err)
 	}
@@ -105,7 +93,7 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 			return fmt.Errorf("error parsing Json to v1.CreateSchedulerRequest: %w", err)
 		}
 
-		serializedRequest, err := marshler.Marshal(&request)
+		serializedRequest, err := common.Marshaller.Marshal(&request)
 		if err != nil {
 			return fmt.Errorf("error parsing request to json: %w", err)
 		}
@@ -125,27 +113,4 @@ func (cs *CreateScheduler) run(_ *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-func (cs *CreateScheduler) SplitYAML(resources []byte) ([][]byte, error) {
-
-	dec := yaml.NewDecoder(bytes.NewReader(resources))
-
-	var res [][]byte
-	for {
-		var value interface{}
-		err := dec.Decode(&value)
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		valueBytes, err := yaml.Marshal(value)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, valueBytes)
-	}
-	return res, nil
 }

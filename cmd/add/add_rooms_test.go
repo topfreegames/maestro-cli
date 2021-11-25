@@ -11,6 +11,10 @@ import (
 	"fmt"
 	"testing"
 
+	v1 "github.com/topfreegames/maestro/pkg/api/v1"
+
+	"github.com/topfreegames/maestro-cli/common"
+
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/topfreegames/maestro-cli/extensions"
@@ -55,9 +59,16 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 200, nil)
+		request := v1.AddRoomsRequest{
+			Amount: int32(10),
+		}
 
-		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
+		serializedRequest, err := common.Marshaller.Marshal(&request)
+		require.NoError(t, err)
+
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", string(serializedRequest)).Return([]byte(""), 200, nil)
+
+		err = NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
 
 		require.NoError(t, err)
 	})
@@ -69,9 +80,16 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 0, fmt.Errorf("tcp connection failed"))
+		request := v1.AddRoomsRequest{
+			Amount: int32(10),
+		}
 
-		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
+		serializedRequest, err := common.Marshaller.Marshal(&request)
+		require.NoError(t, err)
+
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", string(serializedRequest)).Return([]byte(""), 0, fmt.Errorf("tcp connection failed"))
+
+		err = NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "error on post request: tcp connection failed")
@@ -84,9 +102,16 @@ func TestAddRoomsAction(t *testing.T) {
 
 		client := mocks.NewMockClient(mockCtrl)
 
-		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", "{\"schedulerName\":\"\",\"amount\":10}").Return([]byte(""), 404, nil)
+		request := v1.AddRoomsRequest{
+			Amount: int32(10),
+		}
 
-		err := NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
+		serializedRequest, err := common.Marshaller.Marshal(&request)
+		require.NoError(t, err)
+
+		client.EXPECT().Post(config.ServerURL+"/schedulers/scheduler/add-rooms", string(serializedRequest)).Return([]byte(""), 404, nil)
+
+		err = NewAddRooms(client, config).run(nil, []string{"scheduler", "10"})
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "add rooms response not ok, status: Not Found, body: ")
