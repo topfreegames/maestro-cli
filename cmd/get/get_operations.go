@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -115,12 +116,23 @@ func (cs *GetOperations) printOperationsTable(operations []*v1.Operation) {
 
 	defer w.Flush()
 
-	format := "%s\t\t%s\t\t%s\t\t%s\t\n"
-	fmt.Fprintf(w, format, "ID", "NAME", "STATUS", "AGE")
+	format := "%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\n"
+	fmt.Fprintf(w, format, "ID", "NAME", "STATUS", "AGE", "LEASE_TTL", "LEASE_EXPIRED")
 
 	for _, operation := range operations {
 		age := time.Since(operation.GetCreatedAt().AsTime())
 		prettyAge := durafmt.ParseShort(age).String()
+
+		leaseTtl := "-"
+		leaseExpired := "-"
+		if operation.Lease.GetTtl() != "" {
+			leaseTtl = operation.Lease.GetTtl()
+			parsedLeaseTtl, err := time.Parse(time.RFC3339, operation.Lease.GetTtl())
+			if err == nil {
+				expiredSeconds := time.Since(parsedLeaseTtl).Seconds()
+				leaseExpired = strings.ToUpper(strconv.FormatBool(expiredSeconds > 0))
+			}
+		}
 
 		fmt.Fprintf(
 			w,
@@ -129,6 +141,8 @@ func (cs *GetOperations) printOperationsTable(operations []*v1.Operation) {
 			strings.ToUpper(operation.GetDefinitionName()),
 			strings.ToUpper(operation.GetStatus()),
 			prettyAge,
+			leaseTtl,
+			leaseExpired,
 		)
 	}
 }
