@@ -125,7 +125,7 @@ func (cs *GetOperations) printOperationsTable(operations []*v1.Operation) {
 
 		leaseTtl := "-"
 		leaseExpired := "-"
-		if operation.Lease.GetTtl() != "" {
+		if operation.Lease != nil {
 			leaseTtl = operation.Lease.GetTtl()
 			parsedLeaseTtl, err := time.Parse(time.RFC3339, operation.Lease.GetTtl())
 			if err == nil {

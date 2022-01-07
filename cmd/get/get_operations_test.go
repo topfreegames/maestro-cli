@@ -10,6 +10,7 @@ package get
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -99,5 +100,48 @@ func TestGetOperationsAction(t *testing.T) {
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "error on GET request: request failed")
+	})
+
+	t.Run("Successfully consume lease information from operations", func(t *testing.T) {
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		client := mocks.NewMockClient(mockCtrl)
+
+		operations := &v1.ListOperationsResponse{
+			PendingOperations: []*v1.Operation{
+				{
+					Id:             "ACTIVE_OPERATION",
+					DefinitionName: "remove_rooms",
+					Status:         "pending",
+					CreatedAt:      timestamppb.Now(),
+					Lease:          &v1.Lease{Ttl: time.Now().UTC().Add(time.Hour).Format(time.RFC3339)},
+				},
+				{
+					Id:             "EXPIRED_OPERATION",
+					DefinitionName: "remove_rooms",
+					Status:         "pending",
+					CreatedAt:      timestamppb.Now(),
+					Lease:          &v1.Lease{Ttl: time.Now().UTC().Add(-time.Hour).Format(time.RFC3339)},
+				},
+			},
+			FinishedOperations: []*v1.Operation{
+				{
+					Id:             "FINISHED_OPERATION",
+					DefinitionName: "remove_rooms",
+					Status:         "finished",
+					CreatedAt:      timestamppb.Now(),
+					Lease:          nil,
+				},
+			},
+		}
+
+		schedulerName := "test"
+		responseBody, err := protojson.Marshal(operations)
+		require.NoError(t, err)
+		client.EXPECT().Get(config.ServerURL+"/schedulers/"+schedulerName+"/operations", gomock.Any()).Return(responseBody, 200, nil)
+
+		err = NewGetOperations(client, config).run(nil, []string{schedulerName})
+		require.NoError(t, err)
 	})
 }
