@@ -20,9 +20,9 @@ maestro create path/to/config/file.yaml
 ```
 maestro delete scheduler-name
 ```
-* Update scheduler
+* Create scheduler version
 ```
-maestro update path/to/config/file.yaml
+maestro create path/to/config/file.yaml
 ```
 * Get scheduler status
 ```

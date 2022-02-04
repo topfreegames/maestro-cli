@@ -5,7 +5,7 @@
 // http://www.opensource.org/licenses/mit-license
 // Copyright © 2017 Top Free Games <backend@tfgco.com>
 
-package create
+package scheduler
 
 import (
 	"os"

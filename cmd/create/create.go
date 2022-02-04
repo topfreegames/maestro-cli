@@ -9,6 +9,8 @@ package create
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/topfreegames/maestro-cli/cmd/create/scheduler"
+	"github.com/topfreegames/maestro-cli/cmd/create/scheduler_version"
 )
 
 // Cmd represents the create command
@@ -19,5 +21,6 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
-	Cmd.AddCommand(createSchedulerCmd)
+	Cmd.AddCommand(scheduler.CreateSchedulerCmd)
+	Cmd.AddCommand(scheduler_version.CreateSchedulerVersionCmd)
 }

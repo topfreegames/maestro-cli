@@ -5,7 +5,7 @@
 // http://www.opensource.org/licenses/mit-license
 // Copyright © 2017 Top Free Games <backend@tfgco.com>
 
-package create
+package scheduler
 
 import (
 	"errors"
@@ -23,8 +23,8 @@ import (
 	k8s_yaml "sigs.k8s.io/yaml"
 )
 
-// createSchedulerCmd represents the create command
-var createSchedulerCmd = &cobra.Command{
+// CreateSchedulerCmd represents the create command
+var CreateSchedulerCmd = &cobra.Command{
 	Use:     "scheduler",
 	Short:   "Creates new scheduler",
 	Example: "maestro-cli create scheduler ./scheduler.yaml",
