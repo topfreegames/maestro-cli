@@ -973,6 +973,8 @@ github.com/tommy-muehle/go-mnd/v2 v2.4.0 h1:1t0f8Uiaq+fqKteUR4N9Umr6E99R+lDnLnq7
 github.com/tommy-muehle/go-mnd/v2 v2.4.0/go.mod h1:WsUAkMJMYww6l/ufffCD3m+P7LEvr8TnZn9lwVDlgzw=
 github.com/topfreegames/maestro v1.0.1-0.20220203222207-0bf38a104155 h1:9IhVse+O0D31T/o1VEm3kiNaALMCkKo4RYKRRBwZnzc=
 github.com/topfreegames/maestro v1.0.1-0.20220203222207-0bf38a104155/go.mod h1:FAkRtxy4RkZMC3e6p/GAspn+2gOi3RsyzhbBn1hbRYM=
+github.com/topfreegames/maestro v1.0.1-0.20220204211634-030d452aede5 h1:7EmxLn+N5A75qQYjQEwcQxMQasixo6oPpRZgH3wbRv0=
+github.com/topfreegames/maestro v1.0.1-0.20220204211634-030d452aede5/go.mod h1:FAkRtxy4RkZMC3e6p/GAspn+2gOi3RsyzhbBn1hbRYM=
 github.com/topfreegames/protos v1.8.0/go.mod h1:qHAf/WxOHNdgRC7/8DGxe4rE+7HdPuzFCuTXT/gxDWk=
 github.com/twitchtv/twirp v8.1.0+incompatible/go.mod h1:RRJoFSAmTEh2weEqWtpPE3vFK5YBhA6bqp2l1kfCC5A=
 github.com/ugorji/go v1.1.7/go.mod h1:kZn38zHttfInRq0xu/PH0az30d+z6vm202qpg1oXVMw=
