@@ -40,6 +40,10 @@ maestro rollback scheduler-name v1
 ```
 maestro edit scheduler-name
 ```
+* Switch active schedule version
+```
+maestro-cli switch active-version scheduler-name v2.0.0
+```
 * The commands update, edit and set return an operationKey. Use this operationKey to get its progress or cancel it.
 ```
 maestro progress operation-key
