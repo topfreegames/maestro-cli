@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"github.com/Masterminds/semver"
 	"github.com/spf13/cobra"
 	"github.com/topfreegames/maestro-cli/common"
@@ -89,8 +91,11 @@ func (a *SwitchActiveVersion) run(_ *cobra.Command, args []string) error {
 	if status != http.StatusOK {
 		return fmt.Errorf("switch active version response not ok, status: %s, body: %s", http.StatusText(status), string(body))
 	}
-
-	logger.Info("Successfully scheduler version switched: " + schedulerName)
-
+	var response v1.SwitchActiveVersionResponse
+	err = protojson.Unmarshal(body, &response)
+	if err != nil {
+		return fmt.Errorf("error deserializing switch active version response, details: %w", err)
+	}
+	logger.Info("Successfully executed switch active version operation, operation id: " + response.OperationId)
 	return nil
 }
