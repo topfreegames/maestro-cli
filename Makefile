@@ -24,7 +24,7 @@ help: Makefile ## Show list of commands.
 
 build: ## Generate cli binary from code.
 	@mkdir -p bin
-	@go build -o ./bin/maestro main.go
+	@go build -o ./bin/maestro-cli main.go
 
 test: unit test-coverage-func ## Run coverage and unit tests.
 	
