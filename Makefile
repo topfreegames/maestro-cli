@@ -17,7 +17,7 @@ SOURCES := $(shell \
 
 build:
 	@mkdir -p bin
-	@go build -o ./bin/maestro main.go
+	@go build -o ./bin/maestro-cli main.go
 
 test: unit test-coverage-func
 	
