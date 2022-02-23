@@ -20,4 +20,5 @@ var Cmd = &cobra.Command{
 func init() {
 	Cmd.AddCommand(getSchedulersCmd)
 	Cmd.AddCommand(getOperationsCmd)
+	Cmd.AddCommand(getSchedulersInfoCmd)
 }

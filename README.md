@@ -44,6 +44,15 @@ maestro edit scheduler-name
 ```
 maestro-cli switch active-version scheduler-name v2.0.0
 ```
+* Get Scheduler and Game Rooms information by Game
+```
+maestro-cli get scheduler-info game-name
+```
+* Get Scheduler and Game Rooms information for all schedulers
+```
+maestro-cli get scheduler-info
+```
+
 * The commands update, edit and set return an operationKey. Use this operationKey to get its progress or cancel it.
 ```
 maestro progress operation-key

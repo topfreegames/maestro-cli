@@ -13,7 +13,7 @@ require (
 	github.com/spf13/afero v1.8.1
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
-	github.com/topfreegames/maestro v1.0.1-0.20220211163950-d204be8492c2
+	github.com/topfreegames/maestro v1.0.1-0.20220222225259-dc2b33ba8cc3
 	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/zap v1.21.0
