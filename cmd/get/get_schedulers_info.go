@@ -88,6 +88,6 @@ func (s *GetSchedulersInfo) printSchedulersTable(schedulers []*v1.SchedulerInfo)
 	fmt.Fprintf(w, format, "SCHEDULER", "GAME", "STATE", "ROOM_SREADY", "ROOMS_OCCUPIED", "ROOMS_CREATING", "ROOMS_TERMINATING")
 
 	for _, scheduler := range schedulers {
-		fmt.Fprintf(w, format, scheduler.GetName(), scheduler.GetName(), scheduler.GetState(), strconv.Itoa(int(scheduler.GetRoomsReady())), strconv.Itoa(int(scheduler.GetRoomsOccupied())), strconv.Itoa(int(scheduler.GetRoomsCreating())), strconv.Itoa(int(scheduler.GetRoomsTerminating())))
+		fmt.Fprintf(w, format, scheduler.GetName(), scheduler.GetName(), scheduler.GetState(), strconv.Itoa(int(scheduler.GetRoomsReady())), strconv.Itoa(int(scheduler.GetRoomsOccupied())), strconv.Itoa(int(scheduler.GetRoomsPending())), strconv.Itoa(int(scheduler.GetRoomsTerminating())))
 	}
 }

@@ -32,37 +32,40 @@ func TestCreateSchedulerAction(t *testing.T) {
 
 	t.Run("with success", func(t *testing.T) {
 		expectedStructuredBody := v1.CreateSchedulerRequest{
-			Name:                   "scheduler-name-1",
-			Game:                   "game-name",
-			TerminationGracePeriod: 100,
-			PortRange: &v1.PortRange{
-				Start: 1,
-				End:   1000,
+			Name:     "scheduler-test",
+			Game:     "game-test",
+			MaxSurge: "10%",
+			Spec: &v1.Spec{
+				TerminationGracePeriod: 15,
+				Containers: []*v1.Container{
+					{
+						Name:            "example",
+						Image:           "alpine:3.15.0",
+						Command:         []string{"sh", "-c", "while true; do sleep 1; done"},
+						ImagePullPolicy: "Always",
+						Environment:     []*v1.ContainerEnvironment{},
+						Requests: &v1.ContainerResources{
+							Memory: "20Mi",
+							Cpu:    "10m",
+						},
+						Limits: &v1.ContainerResources{
+							Memory: "20Mi",
+							Cpu:    "10m",
+						},
+						Ports: []*v1.ContainerPort{
+							{
+								Name:     "default",
+								Protocol: "tcp",
+								Port:     80,
+							},
+						},
+					},
+				},
 			},
-			Containers: []*v1.Container{{
-				Name:            "game-room-container-name",
-				Image:           "game-room-container-image",
-				ImagePullPolicy: "IfNotPresent",
-				Command:         []string{"./run"},
-				Environment: []*v1.ContainerEnvironment{{
-					Name:  "env-var-name",
-					Value: "env-var-value",
-				}},
-				Requests: &v1.ContainerResources{
-					Memory: "100mi",
-					Cpu:    "100m",
-				},
-				Limits: &v1.ContainerResources{
-					Memory: "200mi",
-					Cpu:    "200m",
-				},
-				Ports: []*v1.ContainerPort{{
-					Name:     "container-port-name",
-					Protocol: "https",
-					Port:     12345,
-					HostPort: 54321,
-				}},
-			}},
+			PortRange: &v1.PortRange{
+				Start: 80,
+				End:   8000,
+			},
 		}
 
 		expectedStringBody, _ := protojson.Marshal(&expectedStructuredBody)
