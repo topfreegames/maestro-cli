@@ -25,6 +25,7 @@ func TestGetOperationsAction(t *testing.T) {
 	config := &extensions.Config{
 		ServerURL: "http://localhost:8080",
 	}
+	params := &GetOperationsParameters{Input: true, ExecutionHistory: true}
 
 	t.Run("with success", func(t *testing.T) {
 		mockCtrl := gomock.NewController(t)
@@ -43,10 +44,14 @@ func TestGetOperationsAction(t *testing.T) {
 			},
 			FinishedOperations: []*v1.Operation{
 				{
-					Id:             "123",
-					DefinitionName: "remove_rooms",
-					Status:         "finished",
-					CreatedAt:      timestamppb.Now(),
+					Id:               "123",
+					Status:           "finished",
+					DefinitionName:   "remove_rooms",
+					Lease:            &v1.Lease{Ttl: "2022-01-01"},
+					SchedulerName:    "Name",
+					CreatedAt:        timestamppb.Now(),
+					Input:            nil,
+					ExecutionHistory: nil,
 				},
 			},
 		}
@@ -56,7 +61,28 @@ func TestGetOperationsAction(t *testing.T) {
 		require.NoError(t, err)
 		client.EXPECT().Get(config.ServerURL+"/schedulers/"+schedulerName+"/operations", gomock.Any()).Return(responseBody, 200, nil)
 
-		err = NewGetOperations(client, config).run(nil, []string{schedulerName})
+		err = NewGetOperations(client, config, params).run(nil, []string{schedulerName})
+		require.NoError(t, err)
+	})
+
+	t.Run("no operations found - with success", func(t *testing.T) {
+		mockCtrl := gomock.NewController(t)
+		defer mockCtrl.Finish()
+
+		client := mocks.NewMockClient(mockCtrl)
+
+		operations := &v1.ListOperationsResponse{
+			PendingOperations:  []*v1.Operation{},
+			ActiveOperations:   []*v1.Operation{},
+			FinishedOperations: []*v1.Operation{},
+		}
+
+		schedulerName := "test"
+		responseBody, err := protojson.Marshal(operations)
+		require.NoError(t, err)
+		client.EXPECT().Get(config.ServerURL+"/schedulers/"+schedulerName+"/operations", gomock.Any()).Return(responseBody, 200, nil)
+
+		err = NewGetOperations(client, config, params).run(nil, []string{schedulerName})
 		require.NoError(t, err)
 	})
 
@@ -68,7 +94,7 @@ func TestGetOperationsAction(t *testing.T) {
 		client := mocks.NewMockClient(mockCtrl)
 		client.EXPECT().Get(config.ServerURL+"/schedulers/"+schedulerName+"/operations", gomock.Any()).Return([]byte(""), 404, nil)
 
-		err := NewGetOperations(client, config).run(nil, []string{schedulerName})
+		err := NewGetOperations(client, config, params).run(nil, []string{schedulerName})
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "get operations response not ok, status: Not Found")
@@ -82,7 +108,7 @@ func TestGetOperationsAction(t *testing.T) {
 		client := mocks.NewMockClient(mockCtrl)
 		client.EXPECT().Get(config.ServerURL+"/schedulers/"+schedulerName+"/operations", gomock.Any()).Return([]byte(""), 200, nil)
 
-		err := NewGetOperations(client, config).run(nil, []string{schedulerName})
+		err := NewGetOperations(client, config, params).run(nil, []string{schedulerName})
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "error parsing response body")
@@ -96,7 +122,7 @@ func TestGetOperationsAction(t *testing.T) {
 		client := mocks.NewMockClient(mockCtrl)
 		client.EXPECT().Get(config.ServerURL+"/schedulers/"+schedulerName+"/operations", gomock.Any()).Return([]byte(""), 0, errors.New("request failed"))
 
-		err := NewGetOperations(client, config).run(nil, []string{schedulerName})
+		err := NewGetOperations(client, config, params).run(nil, []string{schedulerName})
 
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "error on GET request: request failed")
@@ -141,7 +167,7 @@ func TestGetOperationsAction(t *testing.T) {
 		require.NoError(t, err)
 		client.EXPECT().Get(config.ServerURL+"/schedulers/"+schedulerName+"/operations", gomock.Any()).Return(responseBody, 200, nil)
 
-		err = NewGetOperations(client, config).run(nil, []string{schedulerName})
+		err = NewGetOperations(client, config, params).run(nil, []string{schedulerName})
 		require.NoError(t, err)
 	})
 }

@@ -1079,10 +1079,10 @@ github.com/tomarrell/wrapcheck/v2 v2.1.0/go.mod h1:crK5eI4RGSUrb9duDTQ5GqcukbKZv
 github.com/tomasen/realip v0.0.0-20180522021738-f0c99a92ddce/go.mod h1:o8v6yHRoik09Xen7gje4m9ERNah1d1PPsVq1VEx9vE4=
 github.com/tommy-muehle/go-mnd/v2 v2.4.0 h1:1t0f8Uiaq+fqKteUR4N9Umr6E99R+lDnLnq7PwX2PPE=
 github.com/tommy-muehle/go-mnd/v2 v2.4.0/go.mod h1:WsUAkMJMYww6l/ufffCD3m+P7LEvr8TnZn9lwVDlgzw=
-github.com/topfreegames/maestro v1.0.1-0.20220211163950-d204be8492c2 h1:WhzLPsdGJq7kVlAZ/WFdUo9eV/0o9ZsEgMgkJtEZy04=
-github.com/topfreegames/maestro v1.0.1-0.20220211163950-d204be8492c2/go.mod h1:FAkRtxy4RkZMC3e6p/GAspn+2gOi3RsyzhbBn1hbRYM=
 github.com/topfreegames/maestro v1.0.1-0.20220222225259-dc2b33ba8cc3 h1:tc8IBGSu+6rtZUZlhOh/QC95+PSLy5kehDAweoHAgtY=
 github.com/topfreegames/maestro v1.0.1-0.20220222225259-dc2b33ba8cc3/go.mod h1:FAkRtxy4RkZMC3e6p/GAspn+2gOi3RsyzhbBn1hbRYM=
+github.com/topfreegames/maestro v1.0.1-0.20220317172050-8891335a8360 h1:OXF1umsCWW/Uzit9yLYKXNqEQBv2zH+26DJXG5jaoG8=
+github.com/topfreegames/maestro v1.0.1-0.20220317172050-8891335a8360/go.mod h1:1m+QA50Bg9NV3zhL1fVWgAGXFTbKAkguO+ps4K/oeTs=
 github.com/topfreegames/protos v1.8.0 h1:y18JHIwcXfGfjRbXt043dKSvz8ZNIqaKKyDrF8NqaHM=
 github.com/topfreegames/protos v1.8.0/go.mod h1:qHAf/WxOHNdgRC7/8DGxe4rE+7HdPuzFCuTXT/gxDWk=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=

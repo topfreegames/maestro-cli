@@ -8,6 +8,7 @@
 package get
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -27,6 +28,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+var getOperationsInput, getOperationsExecutionHistory bool
+
 // getOperationsCmd represents the list command
 var getOperationsCmd = &cobra.Command{
 	Use:     "operations",
@@ -34,13 +37,23 @@ var getOperationsCmd = &cobra.Command{
 	Example: "maestro-cli get operations SCHEDULER_NAME",
 	Args:    validateArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		parameters := &GetOperationsParameters{
+			Input:            getOperationsInput,
+			ExecutionHistory: getOperationsExecutionHistory,
+		}
+
 		client, config, err := common.GetClientAndConfig()
 		if err != nil {
 			return err
 		}
 
-		return NewGetOperations(client, config).run(cmd, args)
+		return NewGetOperations(client, config, parameters).run(cmd, args)
 	},
+}
+
+func init() {
+	getOperationsCmd.Flags().BoolVarP(&getOperationsInput, "input", "i", false, "shows input for operations")
+	getOperationsCmd.Flags().BoolVarP(&getOperationsExecutionHistory, "execution-history", "x", false, "shows execution history for operations")
 }
 
 func validateArgs(_ *cobra.Command, args []string) error {
@@ -51,15 +64,22 @@ func validateArgs(_ *cobra.Command, args []string) error {
 	return nil
 }
 
-type GetOperations struct {
-	client interfaces.Client
-	config *extensions.Config
+type GetOperationsParameters struct {
+	Input            bool
+	ExecutionHistory bool
 }
 
-func NewGetOperations(client interfaces.Client, config *extensions.Config) *GetOperations {
+type GetOperations struct {
+	client     interfaces.Client
+	config     *extensions.Config
+	parameters *GetOperationsParameters
+}
+
+func NewGetOperations(client interfaces.Client, config *extensions.Config, parameters *GetOperationsParameters) *GetOperations {
 	return &GetOperations{
-		client: client,
-		config: config,
+		client:     client,
+		config:     config,
+		parameters: parameters,
 	}
 }
 
@@ -116,33 +136,82 @@ func (cs *GetOperations) printOperationsTable(operations []*v1.Operation) {
 
 	defer w.Flush()
 
-	format := "%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\n"
-	fmt.Fprintf(w, format, "ID", "NAME", "STATUS", "AGE", "LEASE_TTL", "LEASE_EXPIRED")
+	defaultHeaders := []interface{}{"ID", "NAME", "STATUS", "AGE", "LEASE_TTL", "LEASE_EXPIRED"}
+	format := "%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s"
+
+	headers := make([]interface{}, 0)
+	headers = append(headers, defaultHeaders...)
+
+	if cs.parameters.Input {
+		format = format + "\t\t%s"
+		headers = append(headers, "INPUT")
+	}
+	if cs.parameters.ExecutionHistory {
+		format = format + "\t\t%s"
+		headers = append(headers, "EXEC. HIST.")
+	}
+
+	format = format + "\t\n"
+	fmt.Fprintf(w, format, headers...)
 
 	for _, operation := range operations {
-		age := time.Since(operation.GetCreatedAt().AsTime())
-		prettyAge := durafmt.ParseShort(age).String()
-
-		leaseTtl := "-"
-		leaseExpired := "-"
-		if operation.Lease != nil {
-			leaseTtl = operation.Lease.GetTtl()
-			parsedLeaseTtl, err := time.Parse(time.RFC3339, operation.Lease.GetTtl())
-			if err == nil {
-				expiredSeconds := time.Since(parsedLeaseTtl).Seconds()
-				leaseExpired = strings.ToUpper(strconv.FormatBool(expiredSeconds > 0))
-			}
-		}
-
-		fmt.Fprintf(
-			w,
-			format,
-			operation.GetId(),
-			strings.ToUpper(operation.GetDefinitionName()),
-			strings.ToUpper(operation.GetStatus()),
-			prettyAge,
-			leaseTtl,
-			leaseExpired,
-		)
+		values := cs.getOperationValues(operation)
+		fmt.Fprintf(w, format, values...)
 	}
+}
+
+func (cs *GetOperations) getOperationValues(operation *v1.Operation) []interface{} {
+	age := time.Since(operation.GetCreatedAt().AsTime())
+	prettyAge := durafmt.ParseShort(age).String()
+
+	leaseTtl, leaseExpired := cs.getOperationLeaseInfo(operation)
+
+	values := make([]interface{}, 0)
+
+	defaultValues := []interface{}{
+		operation.GetId(),
+		strings.ToUpper(operation.GetDefinitionName()),
+		strings.ToUpper(operation.GetStatus()),
+		prettyAge,
+		leaseTtl,
+		leaseExpired,
+	}
+	values = append(values, defaultValues...)
+	values = cs.appendInputIfRequested(values, operation)
+	values = cs.appendExecutionHistoryValueIfRequested(values, operation)
+	return values
+}
+
+func (cs *GetOperations) appendExecutionHistoryValueIfRequested(values []interface{}, operation *v1.Operation) []interface{} {
+	if cs.parameters.ExecutionHistory {
+		var prettyExecHist string
+		out, _ := json.Marshal(operation.GetExecutionHistory())
+		prettyExecHist = string(out)
+		if prettyExecHist == "null" {
+			prettyExecHist = "-"
+		}
+		values = append(values, prettyExecHist)
+	}
+	return values
+}
+
+func (cs *GetOperations) appendInputIfRequested(values []interface{}, operation *v1.Operation) []interface{} {
+	if cs.parameters.Input {
+		values = append(values, operation.GetInput().String())
+	}
+	return values
+}
+
+func (cs *GetOperations) getOperationLeaseInfo(operation *v1.Operation) (string, string) {
+	leaseTtl := "-"
+	leaseExpired := "-"
+	if operation.Lease != nil {
+		leaseTtl = operation.Lease.GetTtl()
+		parsedLeaseTtl, err := time.Parse(time.RFC3339, operation.Lease.GetTtl())
+		if err == nil {
+			expiredSeconds := time.Since(parsedLeaseTtl).Seconds()
+			leaseExpired = strings.ToUpper(strconv.FormatBool(expiredSeconds > 0))
+		}
+	}
+	return leaseTtl, leaseExpired
 }

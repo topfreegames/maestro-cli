@@ -29,7 +29,7 @@ func TestGetSchedulersInfoAction(t *testing.T) {
 					State:            "creating",
 					RoomsReady:       10,
 					RoomsTerminating: 2,
-					RoomsCreating:    5,
+					RoomsPending:     5,
 					RoomsOccupied:    20,
 				},
 			},
