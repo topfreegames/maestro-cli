@@ -184,20 +184,27 @@ func (cs *GetOperations) getOperationValues(operation *v1.Operation) []interface
 
 func (cs *GetOperations) appendExecutionHistoryValueIfRequested(values []interface{}, operation *v1.Operation) []interface{} {
 	if cs.parameters.ExecutionHistory {
-		var prettyExecHist string
-		out, _ := json.Marshal(operation.GetExecutionHistory())
-		prettyExecHist = string(out)
-		if prettyExecHist == "null" {
-			prettyExecHist = "-"
+		type printableEvent struct {
+			CreatedAt string `json:"createdAt"`
+			Event     string `json:"event"`
 		}
-		values = append(values, prettyExecHist)
+
+		history := make([]*printableEvent, 0)
+		execHist := operation.GetExecutionHistory()
+		for _, event := range execHist {
+			history = append(history, &printableEvent{
+				CreatedAt: event.GetCreatedAt().AsTime().String(),
+				Event:     event.GetEvent(),
+			})
+		}
+		values = append(values, cs.fromFieldToJson(history))
 	}
 	return values
 }
 
 func (cs *GetOperations) appendInputIfRequested(values []interface{}, operation *v1.Operation) []interface{} {
 	if cs.parameters.Input {
-		values = append(values, operation.GetInput().String())
+		values = append(values, cs.fromFieldToJson(operation.GetInput()))
 	}
 	return values
 }
@@ -214,4 +221,18 @@ func (cs *GetOperations) getOperationLeaseInfo(operation *v1.Operation) (string,
 		}
 	}
 	return leaseTtl, leaseExpired
+}
+
+func (cs *GetOperations) fromFieldToJson(field interface{}) string {
+	var prettyField string
+	out, err := json.Marshal(field)
+	if err != nil {
+		return ""
+	}
+	prettyField = string(out)
+	if prettyField == "null" {
+		prettyField = "-"
+	}
+
+	return prettyField
 }
