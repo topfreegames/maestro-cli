@@ -1083,6 +1083,8 @@ github.com/topfreegames/maestro v1.0.1-0.20220222225259-dc2b33ba8cc3 h1:tc8IBGSu
 github.com/topfreegames/maestro v1.0.1-0.20220222225259-dc2b33ba8cc3/go.mod h1:FAkRtxy4RkZMC3e6p/GAspn+2gOi3RsyzhbBn1hbRYM=
 github.com/topfreegames/maestro v1.0.1-0.20220317172050-8891335a8360 h1:OXF1umsCWW/Uzit9yLYKXNqEQBv2zH+26DJXG5jaoG8=
 github.com/topfreegames/maestro v1.0.1-0.20220317172050-8891335a8360/go.mod h1:1m+QA50Bg9NV3zhL1fVWgAGXFTbKAkguO+ps4K/oeTs=
+github.com/topfreegames/maestro v1.0.1-0.20220401212241-7f03ddcd3ee8 h1:E2gNkvLPYgd7Pu5wUqHBw661NT/AquF6IGG4dcoVEy8=
+github.com/topfreegames/maestro v1.0.1-0.20220401212241-7f03ddcd3ee8/go.mod h1:1m+QA50Bg9NV3zhL1fVWgAGXFTbKAkguO+ps4K/oeTs=
 github.com/topfreegames/protos v1.8.0 h1:y18JHIwcXfGfjRbXt043dKSvz8ZNIqaKKyDrF8NqaHM=
 github.com/topfreegames/protos v1.8.0/go.mod h1:qHAf/WxOHNdgRC7/8DGxe4rE+7HdPuzFCuTXT/gxDWk=
 github.com/tv42/httpunix v0.0.0-20150427012821-b75d8614f926/go.mod h1:9ESjWnEqriFuLhtthL60Sar/7RFoluCcXsuvEwTV5KM=

@@ -21,4 +21,5 @@ func init() {
 	Cmd.AddCommand(getSchedulersCmd)
 	Cmd.AddCommand(getOperationsCmd)
 	Cmd.AddCommand(getSchedulersInfoCmd)
+	Cmd.AddCommand(getOperationCmd)
 }
