@@ -155,16 +155,16 @@ func (cs *GetOperations) printOperationsTable(operations []*v1.Operation) {
 	fmt.Fprintf(w, format, headers...)
 
 	for _, operation := range operations {
-		values := cs.getOperationValues(operation)
+		values := getOperationValues(operation, cs.parameters.Input, cs.parameters.ExecutionHistory)
 		fmt.Fprintf(w, format, values...)
 	}
 }
 
-func (cs *GetOperations) getOperationValues(operation *v1.Operation) []interface{} {
+func getOperationValues(operation *v1.Operation, includeInput, incluseHistory bool) []interface{} {
 	age := time.Since(operation.GetCreatedAt().AsTime())
 	prettyAge := durafmt.ParseShort(age).String()
 
-	leaseTtl, leaseExpired := cs.getOperationLeaseInfo(operation)
+	leaseTtl, leaseExpired := getOperationLeaseInfo(operation)
 
 	values := make([]interface{}, 0)
 
@@ -177,13 +177,13 @@ func (cs *GetOperations) getOperationValues(operation *v1.Operation) []interface
 		leaseExpired,
 	}
 	values = append(values, defaultValues...)
-	values = cs.appendInputIfRequested(values, operation)
-	values = cs.appendExecutionHistoryValueIfRequested(values, operation)
+	values = appendInputIfRequested(values, operation, includeInput)
+	values = appendExecutionHistoryValueIfRequested(values, operation, incluseHistory)
 	return values
 }
 
-func (cs *GetOperations) appendExecutionHistoryValueIfRequested(values []interface{}, operation *v1.Operation) []interface{} {
-	if cs.parameters.ExecutionHistory {
+func appendExecutionHistoryValueIfRequested(values []interface{}, operation *v1.Operation, includeHistory bool) []interface{} {
+	if includeHistory {
 		type printableEvent struct {
 			CreatedAt string `json:"createdAt"`
 			Event     string `json:"event"`
@@ -197,19 +197,19 @@ func (cs *GetOperations) appendExecutionHistoryValueIfRequested(values []interfa
 				Event:     event.GetEvent(),
 			})
 		}
-		values = append(values, cs.fromFieldToJson(history))
+		values = append(values, fromFieldToJson(history))
 	}
 	return values
 }
 
-func (cs *GetOperations) appendInputIfRequested(values []interface{}, operation *v1.Operation) []interface{} {
-	if cs.parameters.Input {
-		values = append(values, cs.fromFieldToJson(operation.GetInput()))
+func appendInputIfRequested(values []interface{}, operation *v1.Operation, includeInput bool) []interface{} {
+	if includeInput {
+		values = append(values, fromFieldToJson(operation.GetInput()))
 	}
 	return values
 }
 
-func (cs *GetOperations) getOperationLeaseInfo(operation *v1.Operation) (string, string) {
+func getOperationLeaseInfo(operation *v1.Operation) (string, string) {
 	leaseTtl := "-"
 	leaseExpired := "-"
 	if operation.Lease != nil {
@@ -223,7 +223,7 @@ func (cs *GetOperations) getOperationLeaseInfo(operation *v1.Operation) (string,
 	return leaseTtl, leaseExpired
 }
 
-func (cs *GetOperations) fromFieldToJson(field interface{}) string {
+func fromFieldToJson(field interface{}) string {
 	var prettyField string
 	out, err := json.Marshal(field)
 	if err != nil {

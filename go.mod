@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/Masterminds/semver v1.5.0
 	github.com/golang/mock v1.6.0
+	github.com/golang/protobuf v1.5.2
 	github.com/golangci/golangci-lint v1.41.1
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.3
@@ -13,7 +14,7 @@ require (
 	github.com/spf13/afero v1.8.1
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
-	github.com/topfreegames/maestro v1.0.1-0.20220317172050-8891335a8360
+	github.com/topfreegames/maestro v1.0.1-0.20220401212241-7f03ddcd3ee8
 	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/zap v1.21.0
