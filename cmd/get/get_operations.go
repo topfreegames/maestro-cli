@@ -28,8 +28,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-var getOperationsInput, getOperationsExecutionHistory bool
-
 // getOperationsCmd represents the list command
 var getOperationsCmd = &cobra.Command{
 	Use:     "operations",
@@ -37,23 +35,13 @@ var getOperationsCmd = &cobra.Command{
 	Example: "maestro-cli get operations SCHEDULER_NAME",
 	Args:    validateArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		parameters := &GetOperationsParameters{
-			Input:            getOperationsInput,
-			ExecutionHistory: getOperationsExecutionHistory,
-		}
-
 		client, config, err := common.GetClientAndConfig()
 		if err != nil {
 			return err
 		}
 
-		return NewGetOperations(client, config, parameters).run(cmd, args)
+		return NewGetOperations(client, config).run(cmd, args)
 	},
-}
-
-func init() {
-	getOperationsCmd.Flags().BoolVarP(&getOperationsInput, "input", "i", false, "shows input for operations")
-	getOperationsCmd.Flags().BoolVarP(&getOperationsExecutionHistory, "execution-history", "x", false, "shows execution history for operations")
 }
 
 func validateArgs(_ *cobra.Command, args []string) error {
@@ -64,22 +52,15 @@ func validateArgs(_ *cobra.Command, args []string) error {
 	return nil
 }
 
-type GetOperationsParameters struct {
-	Input            bool
-	ExecutionHistory bool
-}
-
 type GetOperations struct {
-	client     interfaces.Client
-	config     *extensions.Config
-	parameters *GetOperationsParameters
+	client interfaces.Client
+	config *extensions.Config
 }
 
-func NewGetOperations(client interfaces.Client, config *extensions.Config, parameters *GetOperationsParameters) *GetOperations {
+func NewGetOperations(client interfaces.Client, config *extensions.Config) *GetOperations {
 	return &GetOperations{
-		client:     client,
-		config:     config,
-		parameters: parameters,
+		client: client,
+		config: config,
 	}
 }
 
@@ -142,20 +123,11 @@ func (cs *GetOperations) printOperationsTable(operations []*v1.Operation) {
 	headers := make([]interface{}, 0)
 	headers = append(headers, defaultHeaders...)
 
-	if cs.parameters.Input {
-		format = format + "\t\t%s"
-		headers = append(headers, "INPUT")
-	}
-	if cs.parameters.ExecutionHistory {
-		format = format + "\t\t%s"
-		headers = append(headers, "EXEC. HIST.")
-	}
-
 	format = format + "\t\n"
 	fmt.Fprintf(w, format, headers...)
 
 	for _, operation := range operations {
-		values := getOperationValues(operation, cs.parameters.Input, cs.parameters.ExecutionHistory)
+		values := getOperationValues(operation, false, false)
 		fmt.Fprintf(w, format, values...)
 	}
 }
