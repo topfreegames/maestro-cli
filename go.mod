@@ -10,12 +10,13 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.3
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/onsi/ginkgo v1.16.1
+	github.com/onsi/ginkgo v1.16.5
 	github.com/spf13/afero v1.8.1
 	github.com/spf13/cobra v1.3.0
-	github.com/stretchr/testify v1.7.0
-	github.com/topfreegames/maestro v1.0.1-0.20220401212241-7f03ddcd3ee8
+	github.com/stretchr/testify v1.7.1
+	github.com/topfreegames/maestro v1.0.1-0.20220825215256-f24c855e9519
 	github.com/wadey/gocovmerge v0.0.0-20160331181800-b5bfa59ec0ad
+	go.opentelemetry.io/otel v0.20.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/zap v1.21.0
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect

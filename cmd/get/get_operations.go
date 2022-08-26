@@ -28,6 +28,15 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+var getStageName string
+var getPageNumber, getPerPageNumber string
+
+func init() {
+	getOperationsCmd.Flags().StringVarP(&getStageName, "stage", "s", "", "Add name filter")
+	getOperationsCmd.Flags().StringVarP(&getPageNumber, "page", "p", "", "Add game filter")
+	getOperationsCmd.Flags().StringVarP(&getPerPageNumber, "perpage", "P", "", "Add version filter")
+}
+
 // getOperationsCmd represents the list command
 var getOperationsCmd = &cobra.Command{
 	Use:     "operations",
@@ -35,12 +44,17 @@ var getOperationsCmd = &cobra.Command{
 	Example: "maestro-cli get operations SCHEDULER_NAME",
 	Args:    validateArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		parameters := &GetOperationsParameters{
+			Stage:   getStageName,
+			Page:    getPageNumber,
+			PerPage: getPerPageNumber,
+		}
 		client, config, err := common.GetClientAndConfig()
 		if err != nil {
 			return err
 		}
 
-		return NewGetOperations(client, config).run(cmd, args)
+		return NewGetOperations(client, config, parameters).run(cmd, args)
 	},
 }
 
@@ -52,15 +66,23 @@ func validateArgs(_ *cobra.Command, args []string) error {
 	return nil
 }
 
-type GetOperations struct {
-	client interfaces.Client
-	config *extensions.Config
+type GetOperationsParameters struct {
+	Stage   string
+	Page    string
+	PerPage string
 }
 
-func NewGetOperations(client interfaces.Client, config *extensions.Config) *GetOperations {
+type GetOperations struct {
+	client     interfaces.Client
+	config     *extensions.Config
+	parameters *GetOperationsParameters
+}
+
+func NewGetOperations(client interfaces.Client, config *extensions.Config, parameters *GetOperationsParameters) *GetOperations {
 	return &GetOperations{
-		client: client,
-		config: config,
+		client:     client,
+		config:     config,
+		parameters: parameters,
 	}
 }
 
@@ -69,7 +91,9 @@ func (cs *GetOperations) run(_ *cobra.Command, args []string) error {
 	logger.Debug("getting operations")
 
 	schedulerName := args[0]
-	url := fmt.Sprintf("%s/schedulers/%s/operations", cs.config.ServerURL, schedulerName)
+	parameters := buildURLParametersForOperations(cs.parameters.Stage, cs.parameters.Page, cs.parameters.PerPage)
+	url := fmt.Sprintf("%s/schedulers/%s/operations%s", cs.config.ServerURL, schedulerName, parameters)
+
 	body, status, err := cs.client.Get(url, "")
 	if err != nil {
 		return fmt.Errorf("error on GET request: %w", err)
@@ -90,20 +114,19 @@ func (cs *GetOperations) run(_ *cobra.Command, args []string) error {
 	// merge all operations into a single slice
 	// TODO(gabriel.corado): add option to only show operations with specific
 	// status.
-	mergedOperations := append(operationsLists.GetPendingOperations(), operationsLists.GetActiveOperations()...)
-	mergedOperations = append(mergedOperations, operationsLists.GetFinishedOperations()...)
+	operations := operationsLists.GetOperations()
 
 	// TODO(gabriel.corado): add a option to reverse this order.
-	sort.Slice(mergedOperations, func(i, j int) bool {
-		return mergedOperations[i].GetCreatedAt().AsTime().Before(mergedOperations[j].GetCreatedAt().AsTime())
+	sort.Slice(operations, func(i, j int) bool {
+		return operations[i].GetCreatedAt().AsTime().Before(operations[j].GetCreatedAt().AsTime())
 	})
 
-	if len(mergedOperations) == 0 {
+	if len(operations) == 0 {
 		fmt.Println("no operations found")
 		return nil
 	}
 
-	cs.printOperationsTable(mergedOperations)
+	// cs.printOperationsTable(operations)
 	return nil
 }
 
@@ -207,4 +230,13 @@ func fromFieldToJson(field interface{}) string {
 	}
 
 	return prettyField
+}
+func buildURLParametersForOperations(stage string, page, perpage string) string {
+	parameters := ""
+
+	parameters = appendParameter(parameters, "stage", stage)
+	parameters = appendParameter(parameters, "page", page)
+	parameters = appendParameter(parameters, "perPage", perpage)
+
+	return parameters
 }
