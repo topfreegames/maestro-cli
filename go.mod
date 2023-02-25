@@ -19,7 +19,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/zap v1.21.0
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd // indirect
-	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	google.golang.org/genproto v0.0.0-20220211171837-173942840c17 // indirect
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/yaml.v2 v2.4.0
